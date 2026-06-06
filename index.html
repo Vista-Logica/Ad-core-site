@@ -222,62 +222,61 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
 }
 .hero-video{
   position:relative;
-  width:min(100%,clamp(300px,32vw,500px));
+  width:min(100%,clamp(300px,30vw,470px));
   aspect-ratio:1/1;
   overflow:hidden;
-  background:var(--ink);
+  background:transparent !important;
   border:0 !important;
-  border-radius:50%;
+  border-radius:0;
   box-shadow:none !important;
   outline:0 !important;
   isolation:isolate;
-  transform:translateX(clamp(-10px,-1vw,-4px));
-  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0 48%,rgba(0,0,0,.92) 58%,rgba(0,0,0,.58) 68%,rgba(0,0,0,.20) 78%,transparent 91%);
-  mask-image:radial-gradient(circle at 50% 50%,#000 0 48%,rgba(0,0,0,.92) 58%,rgba(0,0,0,.58) 68%,rgba(0,0,0,.20) 78%,transparent 91%);
+  transform:translateX(clamp(-8px,-.8vw,-3px));
+  /* Wider mask: preserves the animation and only dissolves the outer MP4 frame. */
+  -webkit-mask-image:radial-gradient(ellipse at 50% 50%,#000 0 66%,rgba(0,0,0,.96) 73%,rgba(0,0,0,.68) 82%,rgba(0,0,0,.28) 91%,transparent 100%);
+  mask-image:radial-gradient(ellipse at 50% 50%,#000 0 66%,rgba(0,0,0,.96) 73%,rgba(0,0,0,.68) 82%,rgba(0,0,0,.28) 91%,transparent 100%);
 }
 .hero-video video{
   position:absolute;
   left:50%;
   top:50%;
-  width:138%;
-  height:138%;
+  width:116%;
+  height:116%;
   display:block;
   object-fit:cover;
   background:transparent !important;
-  opacity:.96;
+  opacity:.98;
   mix-blend-mode:screen;
-  transform:translate(-50%,-50%) scale(1.03);
-  filter:saturate(1.12) contrast(1.08) brightness(1.08);
+  transform:translate(-50%,-50%) scale(1.01);
+  filter:saturate(1.12) contrast(1.08) brightness(1.06);
 }
 .hero-video::before{
   content:"";
   position:absolute;
-  inset:8%;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(244,69,61,.14),rgba(91,75,255,.10) 44%,transparent 72%);
-  filter:blur(64px);
-  opacity:.72;
+  inset:2%;
+  background:radial-gradient(ellipse at center,rgba(244,69,61,.12),rgba(91,75,255,.08) 46%,transparent 78%);
+  filter:blur(56px);
+  opacity:.62;
   pointer-events:none;
   z-index:-1;
 }
 .hero-video::after{
   content:"";
   position:absolute;
-  inset:-1px;
-  border-radius:50%;
+  inset:-2px;
   pointer-events:none;
   z-index:2;
+  /* Edge wash only: transparent through most of the animation, page-colour at the video boundary. */
   background:
-    radial-gradient(circle at 50% 50%,transparent 0 54%,rgba(22,23,27,.18) 66%,rgba(22,23,27,.62) 80%,var(--ink) 96%),
-    linear-gradient(to right,var(--ink) 0%,rgba(22,23,27,.96) 5%,rgba(22,23,27,.42) 16%,transparent 30%,transparent 70%,rgba(22,23,27,.42) 84%,rgba(22,23,27,.96) 95%,var(--ink) 100%),
-    linear-gradient(to bottom,var(--ink) 0%,rgba(22,23,27,.96) 5%,rgba(22,23,27,.42) 16%,transparent 30%,transparent 70%,rgba(22,23,27,.42) 84%,rgba(22,23,27,.96) 95%,var(--ink) 100%);
+    linear-gradient(to right,var(--ink) 0%,rgba(22,23,27,.88) 4%,rgba(22,23,27,.34) 10%,transparent 21%,transparent 79%,rgba(22,23,27,.34) 90%,rgba(22,23,27,.88) 96%,var(--ink) 100%),
+    linear-gradient(to bottom,var(--ink) 0%,rgba(22,23,27,.88) 4%,rgba(22,23,27,.34) 10%,transparent 21%,transparent 79%,rgba(22,23,27,.34) 90%,rgba(22,23,27,.88) 96%,var(--ink) 100%);
 }
 @media(max-width:1100px){
   .hero{min-height:clamp(560px,70vh,700px)}
   .hero .wrap{grid-template-columns:minmax(0,3fr) minmax(200px,2fr);gap:clamp(16px,3vw,42px)}
   .hero h1{font-size:clamp(2.15rem,4.7vw,3.7rem)}
   .hero-art{height:clamp(270px,34vw,420px)}
-  .hero-video{width:min(100%,clamp(260px,32vw,420px))}
+  .hero-video{width:min(100%,clamp(255px,30vw,390px))}
 }
 @media(max-width:820px){
   .hero{padding-top:62px;min-height:clamp(510px,68vh,620px)}
@@ -286,16 +285,16 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
   .hero p.lede{font-size:clamp(.88rem,2vw,1rem);margin-bottom:24px;max-width:48ch}
   .hero-meta{margin-top:28px;gap:16px}
   .hero-art{height:clamp(220px,38vw,320px)}
-  .hero-video{width:min(100%,clamp(210px,36vw,320px));transform:translateX(-4px)}
+  .hero-video{width:min(100%,clamp(205px,34vw,300px));transform:translateX(-4px)}
   .btn{padding:11px 20px;font-size:.82rem}
 }
 @media(max-width:560px){
   .hero{min-height:auto;padding:54px 0 58px}
   .hero .wrap{grid-template-columns:minmax(0,1.55fr) minmax(104px,.9fr);gap:2px}
-  .hero-art{height:clamp(160px,44vw,220px);opacity:.88}
-  .hero-video{width:min(100%,clamp(138px,42vw,210px));transform:translateX(-8px)}
+  .hero-art{height:clamp(160px,44vw,220px);opacity:.92}
+  .hero-video{width:min(100%,clamp(138px,40vw,200px));transform:translateX(-6px)}
   .hero-meta{display:none}
-  .hero-video video{width:145%;height:145%}
+  .hero-video video{width:120%;height:120%}
 }
 
 /* ---------- PROBLEM STRIP ---------- */
