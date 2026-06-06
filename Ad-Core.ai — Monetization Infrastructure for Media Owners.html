@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ad-Core.ai — Monetization Infrastructure for Media Owners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./Ad-Core.ai — Monetization Infrastructure for Media Owners_files/css2" rel="stylesheet">
+<style>
+:root{
+  --ink:#16171B;            /* page background — graphite, not black */
+  --ink-2:#1E2026;          /* card background */
+  --ink-3:#262932;
+  --band:#121317;           /* alternate band background */
+  --dark:#0A0B0D;           /* deepest bands (how/case/cta/footer) */
+  --dark-2:#14151A;
+  --paper:#0A0B0D;
+  --paper-2:#14151A;
+  --line:rgba(238,235,226,.09);
+  --line-2:rgba(238,235,226,.18);
+  --text:#EDEBE3;
+  --text-dim:#97958C;
+  --text-ink:#EDEBE3;
+  --text-ink-dim:#97958C;
+  --amber:#F4453D;          /* Piano red, lifted for dark bg */
+  --amber-soft:rgba(244,69,61,.12);
+  --signal:#FF7A59;
+  --teal:#6B8CFF;
+  --radius:18px;
+  --max:1200px;
+  --nav-h:72px;
+  font-size:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:'Archivo',sans-serif;
+  font-weight:400;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:var(--amber);color:#fff}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+.mono{font-family:'IBM Plex Mono',monospace}
+.em{font-style:normal;font-family:inherit;color:var(--amber)}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 32px}
+@media(max-width:720px){.wrap{padding:0 20px}}
+
+/* ---------- FLOW ART (vivid blobs glowing on graphite) ---------- */
+.flow{position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(160deg,#191223,#11141F 55%,#1C1018)}
+.flow .blob{position:absolute;border-radius:50%;filter:blur(52px);opacity:.75;mix-blend-mode:screen;animation:drift 16s ease-in-out infinite alternate}
+.flow .b1{width:46%;padding-bottom:46%;background:radial-gradient(circle at 30% 30%,#FF3B30,#B3173A 70%);top:-10%;left:-6%}
+.flow .b2{width:52%;padding-bottom:52%;background:radial-gradient(circle at 60% 40%,#5B4BFF,#1E3FBF 75%);bottom:-18%;right:-10%;animation-delay:-4s;animation-duration:20s}
+.flow .b3{width:34%;padding-bottom:34%;background:radial-gradient(circle at 40% 40%,#FF9D3D,#FF2D78 80%);top:24%;right:18%;animation-delay:-9s;animation-duration:13s}
+.flow .b4{width:30%;padding-bottom:30%;background:radial-gradient(circle at 50% 50%,#FF2D78,#FF3B30 80%);bottom:6%;left:24%;animation-delay:-6s;animation-duration:18s}
+@keyframes drift{
+  0%{transform:translate(0,0) scale(1) rotate(0deg)}
+  50%{transform:translate(4%,-5%) scale(1.12) rotate(8deg)}
+  100%{transform:translate(-5%,4%) scale(.94) rotate(-6deg)}
+}
+.flow::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 115%,rgba(10,11,13,.55),transparent 60%)}
+.flow-banner{height:230px;margin-top:54px}
+@media(max-width:720px){.flow-banner{height:160px}}
+
+/* ---------- ID GRAPH (interactive, draggable) ---------- */
+.id-graph{position:relative;width:100%;height:440px;border-radius:26px;overflow:hidden;
+  background:linear-gradient(160deg,#15121F,#101319 55%,#171019);border:1px solid var(--line);
+  box-shadow:0 40px 90px rgba(0,0,0,.45);user-select:none;touch-action:none}
+.id-graph .blob{opacity:.32;filter:blur(60px)}
+.id-graph svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.id-graph svg path.edge{stroke:rgba(238,235,226,.16);stroke-width:1.2;fill:none}
+.g-node{
+  position:absolute;z-index:3;display:flex;align-items:center;gap:8px;
+  background:rgba(30,32,40,.86);backdrop-filter:blur(8px);border:1px solid var(--line-2);
+  border-radius:12px;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:.66rem;
+  letter-spacing:.08em;color:var(--text);cursor:grab;box-shadow:0 14px 30px rgba(0,0,0,.35);
+  transition:border-color .2s, box-shadow .2s;will-change:transform
+}
+.g-node:active{cursor:grabbing}
+.g-node:hover{border-color:rgba(244,69,61,.5)}
+.g-node .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.g-node.out .dot{background:var(--teal)}
+.g-node.hub{
+  background:linear-gradient(140deg,rgba(244,69,61,.18),rgba(255,61,120,.12));
+  border-color:rgba(244,69,61,.65);color:#fff;font-weight:500;
+  box-shadow:0 0 44px rgba(244,69,61,.30);padding:13px 18px;font-size:.7rem
+}
+.g-node.hub .dot{background:#fff}
+.g-hint{position:absolute;right:16px;bottom:12px;z-index:3;font-family:'IBM Plex Mono',monospace;
+  font-size:.6rem;letter-spacing:.12em;color:var(--text-dim);opacity:.75}
+
+/* ---------- MARQUEE (moveable boxes) ---------- */
+.marquee{overflow:hidden;cursor:grab;user-select:none;touch-action:pan-y}
+.marquee:active{cursor:grabbing}
+.mq-track{display:flex;gap:14px;width:max-content;will-change:transform;padding:4px 0}
+.mq-box{
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+  background:var(--ink-2);border:1px solid var(--line);border-radius:14px;
+  padding:16px 22px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;
+  letter-spacing:.1em;color:var(--text-dim);transition:border-color .2s,color .2s
+}
+.mq-box:hover{border-color:rgba(244,69,61,.45);color:var(--text)}
+.mq-box .dot{width:7px;height:7px;border-radius:50%;background:var(--amber)}
+.mq-box:nth-child(3n) .dot{background:var(--teal)}
+.mq-box:nth-child(3n+2) .dot{background:#FF2D78}
+
+/* ---------- NAV ---------- */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav-h);
+  background:rgba(22,23,27,.84);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{max-width:var(--max);margin:0 auto;padding:0 32px;height:100%;display:flex;align-items:center;gap:36px}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0}
+.logo-mark{width:30px;height:30px;border-radius:9px;background:var(--amber);position:relative;overflow:hidden}
+.logo-mark::after{content:"";position:absolute;inset:0;background:
+  linear-gradient(135deg,transparent 46%,#fff 46%,#fff 54%,transparent 54%),
+  radial-gradient(circle at 26% 26%,#fff 4px,transparent 4.5px)}
+.logo-name{font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:1.08rem;letter-spacing:-.02em;color:var(--text)}
+.logo-name span{color:var(--amber)}
+.nav-links{display:flex;align-items:center;gap:6px;flex:1}
+.nav-item{position:relative}
+.nav-item>a{display:block;padding:10px 14px;font-size:.88rem;font-weight:500;color:var(--text-dim);border-radius:999px;transition:.2s;cursor:pointer}
+.nav-item>a:hover{color:var(--text);background:rgba(238,235,226,.06)}
+.nav-item>a .caret{font-size:.6rem;margin-left:5px;opacity:.6}
+.dropdown{
+  position:absolute;top:calc(100% + 10px);left:0;min-width:300px;background:var(--ink-2);
+  border:1px solid var(--line-2);border-radius:16px;padding:8px;
+  opacity:0;visibility:hidden;transform:translateY(6px);transition:.2s;box-shadow:0 28px 70px rgba(0,0,0,.5)
+}
+.nav-item:hover .dropdown{opacity:1;visibility:visible;transform:translateY(0)}
+.dropdown a{display:flex;flex-direction:column;gap:1px;padding:10px 12px;border-radius:10px;transition:.15s}
+.dropdown a:hover{background:rgba(244,69,61,.08)}
+.dropdown a b{font-size:.85rem;font-weight:600;color:var(--text)}
+.dropdown a small{font-size:.74rem;color:var(--text-dim)}
+.nav-cta{margin-left:auto;flex-shrink:0}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:999px;
+  font-weight:600;font-size:.88rem;font-family:'Archivo',sans-serif;cursor:pointer;border:none;transition:.2s;letter-spacing:.01em
+}
+.btn-amber{background:var(--amber);color:#fff}
+.btn-amber:hover{background:#FF5A50;transform:translateY(-1px);box-shadow:0 12px 28px rgba(244,69,61,.30)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line-2)}
+.btn-ghost:hover{border-color:var(--text);background:rgba(238,235,226,.05)}
+.btn-ink{background:var(--text);color:var(--ink)}
+.btn-ink:hover{background:#fff;transform:translateY(-1px)}
+.btn .arr{transition:transform .2s}
+.btn:hover .arr{transform:translateX(3px)}
+.hamb{display:none;margin-left:auto;background:none;border:1px solid var(--line-2);border-radius:999px;color:var(--text);padding:8px 14px;font-size:1rem;cursor:pointer}
+@media(max-width:1020px){
+  .nav-links{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--ink-2);flex-direction:column;align-items:stretch;padding:14px;gap:2px;border-bottom:1px solid var(--line-2);max-height:calc(100vh - var(--nav-h));overflow:auto}
+  .nav-links.open{display:flex}
+  .dropdown{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:none;background:transparent;padding:0 0 0 14px;display:none}
+  .nav-item.open .dropdown{display:block}
+  .hamb{display:block}
+  .nav-cta{display:none}
+}
+
+/* ---------- SHARED ---------- */
+main{padding-top:var(--nav-h)}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:22px;height:1px;background:var(--amber)}
+h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spacing:-.03em;line-height:1.06;color:var(--text)}
+.section{padding:104px 0;position:relative}
+.section.tight{padding:72px 0}
+.grid-bg{display:none}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+/* .light = deepest band */
+.light{background:var(--dark);color:var(--text-ink)}
+.light .kicker{color:#FF8C7A}
+.light .kicker::before{background:#FF8C7A}
+.light h1,.light h2,.light h3{color:var(--text-ink)}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;padding:110px 0 96px;overflow:hidden}
+.hero-glow{position:absolute;width:900px;height:900px;border-radius:50%;top:-460px;right:-280px;
+  background:radial-gradient(circle,rgba(244,69,61,.12),transparent 60%);pointer-events:none}
+.hero-glow.b{top:auto;bottom:-580px;left:-360px;right:auto;background:radial-gradient(circle,rgba(91,75,255,.10),transparent 62%)}
+.hero h1{font-size:clamp(2.7rem,6vw,4.7rem);max-width:15ch;margin:26px 0 24px}
+.hero p.lede{font-size:1.16rem;color:var(--text-dim);max-width:54ch;margin-bottom:38px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.hero-meta{margin-top:64px;display:flex;gap:42px;flex-wrap:wrap}
+.hero-meta .m{display:flex;flex-direction:column;gap:4px}
+.hero-meta .m b{font-family:'Schibsted Grotesk',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.hero-meta .m b i{font-style:normal;color:var(--amber)}
+.hero-meta .m span{font-size:.74rem;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}
+.hero-art{position:absolute;right:32px;top:124px;width:500px}
+@media(max-width:1100px){.hero-art{display:none}}
+
+/* ---------- PROBLEM STRIP ---------- */
+.problem{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--band)}
+.problem-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:0}
+.problem-cell{padding:46px 34px;border-left:1px solid var(--line)}
+.problem-cell:first-child{border-left:none;padding-left:0;display:flex;align-items:center}
+.problem-cell h3{font-size:1.4rem;line-height:1.22;font-weight:600}
+.problem-cell b{display:block;font-family:'Schibsted Grotesk',sans-serif;font-size:2.2rem;font-weight:800;letter-spacing:-.03em;color:var(--text)}
+.problem-cell b i{font-style:normal;font-size:1.1rem;color:var(--amber)}
+.problem-cell p{font-size:.84rem;color:var(--text-dim);margin-top:8px}
+@media(max-width:980px){.problem-grid{grid-template-columns:1fr 1fr}.problem-cell{border-left:none;border-top:1px solid var(--line);padding:30px 0}.problem-cell:nth-child(-n+2){border-top:none}}
+@media(max-width:600px){.problem-grid{grid-template-columns:1fr}}
+
+/* ---------- MODULES ---------- */
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:54px;flex-wrap:wrap}
+.sec-head h2{font-size:clamp(2rem,3.8vw,2.9rem);max-width:22ch;margin-top:18px}
+.sec-head p{max-width:42ch;color:var(--text-dim);font-size:.98rem}
+.light .sec-head p{color:var(--text-ink-dim)}
+.mod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:980px){.mod-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.mod-grid{grid-template-columns:1fr}}
+.mod-card{
+  position:relative;border:1px solid var(--line);border-radius:var(--radius);padding:30px 26px 26px;
+  background:var(--ink-2);cursor:pointer;transition:.25s;overflow:hidden;display:flex;flex-direction:column;min-height:250px
+}
+.mod-card::after{content:"";position:absolute;inset:0;background:radial-gradient(420px 200px at 80% -20%,var(--amber-soft),transparent 70%);opacity:0;transition:.3s}
+.mod-card:hover{border-color:rgba(244,69,61,.45);transform:translateY(-4px);box-shadow:0 24px 50px rgba(0,0,0,.35)}
+.mod-card:hover::after{opacity:1}
+.mod-num{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--text-dim);letter-spacing:.14em}
+.mod-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:18px 0 16px;background:linear-gradient(140deg,rgba(244,69,61,.16),rgba(91,75,255,.14))}
+.mod-icon svg{width:20px;height:20px;stroke:var(--amber);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mod-card h3{font-size:1.18rem;margin-bottom:8px}
+.mod-card p{font-size:.86rem;color:var(--text-dim);flex:1}
+.mod-link{margin-top:18px;font-size:.8rem;font-weight:600;color:var(--amber);display:flex;align-items:center;gap:7px}
+.mod-link .arr{transition:transform .2s}
+.mod-card:hover .mod-link .arr{transform:translateX(4px)}
+
+/* ---------- HOW IT WORKS (deepest band) ---------- */
+.how{background:var(--dark);color:var(--text-ink)}
+.how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid rgba(238,235,226,.14);border-radius:var(--radius);overflow:hidden;background:var(--dark)}
+@media(max-width:880px){.how-steps{grid-template-columns:1fr}}
+.how-step{padding:42px 34px;border-left:1px solid rgba(238,235,226,.12);position:relative;transition:.25s}
+.how-step:first-child{border-left:none}
+@media(max-width:880px){.how-step{border-left:none;border-top:1px solid rgba(238,235,226,.12)}.how-step:first-child{border-top:none}}
+.how-step:hover{background:var(--dark-2)}
+.how-step .stage{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.16em;color:#FF8C7A;text-transform:uppercase;display:flex;justify-content:space-between}
+.how-step h3{font-size:1.7rem;margin:14px 0 10px;letter-spacing:-.02em}
+.how-step p{font-size:.9rem;color:var(--text-ink-dim)}
+.how-step ul{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:9px}
+.how-step li{font-size:.84rem;display:flex;gap:10px;color:#CFCDC5}
+.how-step li::before{content:"";width:6px;height:6px;border-radius:2px;background:var(--amber);margin-top:7px;flex-shrink:0}
+.how-foot{margin-top:34px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.how-foot p{font-size:1.05rem;max-width:52ch}
+.how .btn-ink{background:#fff;color:var(--dark)}
+.how .btn-ink:hover{background:#EDEBE3}
+
+/* ---------- PROOF ---------- */
+.proof{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--band)}
+.proof-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:54px}
+@media(max-width:760px){.proof-stats{grid-template-columns:1fr}}
+.stat{border:1px solid var(--line);border-radius:var(--radius);padding:34px 30px;background:var(--ink-2)}
+.stat b{font-family:'Schibsted Grotesk',sans-serif;font-size:2.7rem;font-weight:800;letter-spacing:-.04em;display:block;color:var(--text)}
+.stat b i{font-style:normal;color:var(--amber)}
+.stat span{font-size:.85rem;color:var(--text-dim)}
+.logo-row{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--ink-2)}
+.logo-cell{flex:1;min-width:160px;padding:26px 18px;text-align:center;border-left:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:.76rem;letter-spacing:.1em;color:var(--text-dim)}
+.logo-cell:first-child{border-left:none}
+.logo-note{margin-top:14px;font-size:.74rem;color:var(--text-dim);font-family:'IBM Plex Mono',monospace}
+
+/* ---------- SOLUTIONS TILES ---------- */
+.sol-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:760px){.sol-grid{grid-template-columns:1fr}}
+.sol-tile{border:1px solid var(--line);border-radius:var(--radius);padding:36px 32px;background:var(--ink-2);cursor:pointer;transition:.25s;position:relative;overflow:hidden}
+.sol-tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber);transform:scaleY(0);transform-origin:top;transition:.3s}
+.sol-tile:hover{transform:translateY(-3px);box-shadow:0 24px 50px rgba(0,0,0,.35);border-color:var(--line-2)}
+.sol-tile:hover::before{transform:scaleY(1)}
+.sol-tile .mono{font-size:.7rem;color:var(--text-dim);letter-spacing:.14em}
+.sol-tile h3{font-size:1.35rem;margin:12px 0 10px}
+.sol-tile p{font-size:.88rem;color:var(--text-dim);max-width:46ch}
+
+/* ---------- CASE (deepest band) ---------- */
+.case{background:var(--dark);color:var(--text-ink)}
+.case-card{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
+@media(max-width:880px){.case-card{grid-template-columns:1fr;gap:34px}}
+.case-quote{font-family:'Schibsted Grotesk',sans-serif;font-weight:500;font-size:clamp(1.5rem,2.8vw,2.1rem);line-height:1.28;letter-spacing:-.015em}
+.case-quote b{color:#FF8C7A;font-weight:600}
+.case-attr{margin-top:24px;font-size:.84rem;color:var(--text-ink-dim)}
+.case-attr b{display:block;color:var(--text-ink);font-size:.9rem}
+.case-metrics{display:flex;flex-direction:column;gap:12px}
+.case-metric{display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:20px 24px;border:1px solid rgba(238,235,226,.14);border-radius:14px;background:var(--dark-2)}
+.case-metric b{font-family:'Schibsted Grotesk',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-.03em}
+.case-metric span{font-size:.82rem;color:var(--text-ink-dim);text-align:right}
+
+/* ---------- INSIGHTS ---------- */
+.ins-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:880px){.ins-grid{grid-template-columns:1fr}}
+.ins-card{border:1px solid var(--line);border-radius:var(--radius);padding:28px 26px;background:var(--ink-2);transition:.25s;cursor:pointer;display:flex;flex-direction:column;min-height:210px}
+.ins-card:hover{border-color:rgba(244,69,61,.45);transform:translateY(-3px);box-shadow:0 24px 50px rgba(0,0,0,.35)}
+.ins-card .tag{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.14em;color:var(--teal);text-transform:uppercase}
+.ins-card h3{font-size:1.05rem;line-height:1.35;margin:14px 0;flex:1;font-weight:600}
+.ins-card .meta{font-size:.76rem;color:var(--text-dim);font-family:'IBM Plex Mono',monospace}
+
+/* ---------- CTA BAND ---------- */
+.cta-band{position:relative;overflow:hidden;text-align:center;padding:120px 0;background:var(--dark);color:var(--text-ink)}
+.cta-band h2{font-size:clamp(2.1rem,4.4vw,3.5rem);max-width:18ch;margin:0 auto 18px;color:var(--text-ink)}
+.cta-band h2 .em{color:#FF8C7A}
+.cta-band p{color:var(--text-ink-dim);max-width:50ch;margin:0 auto 36px}
+.cta-band .hero-glow{top:auto;bottom:-560px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(244,69,61,.22),transparent 60%)}
+
+/* ---------- FOOTER ---------- */
+footer{border-top:1px solid var(--line);padding:64px 0 40px;background:var(--dark);color:var(--text-ink)}
+footer .logo-name{color:var(--text-ink)}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+@media(max-width:880px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.foot-grid{grid-template-columns:1fr}}
+.foot-grid h4{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-ink-dim);margin-bottom:16px}
+.foot-grid a{display:block;font-size:.86rem;color:var(--text-ink-dim);padding:5px 0;transition:.15s;cursor:pointer}
+.foot-grid a:hover{color:#FF8C7A}
+.foot-brand p{font-size:.85rem;color:var(--text-ink-dim);max-width:34ch;margin-top:14px}
+.foot-base{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding-top:28px;border-top:1px solid rgba(238,235,226,.1);font-size:.76rem;color:var(--text-ink-dim);font-family:'IBM Plex Mono',monospace}
+
+/* ---------- SUBPAGE ---------- */
+.sub-hero{padding:96px 0 70px;position:relative;overflow:hidden}
+.crumb{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--text-dim);letter-spacing:.1em;margin-bottom:26px}
+.crumb a{color:var(--amber);cursor:pointer}
+.sub-hero h1{font-size:clamp(2.3rem,5vw,3.7rem);max-width:17ch;margin:18px 0 20px}
+.sub-hero .lede{font-size:1.08rem;color:var(--text-dim);max-width:58ch;margin-bottom:34px}
+.who{display:inline-flex;gap:8px;flex-wrap:wrap;margin-bottom:34px}
+.who span{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.08em;padding:8px 15px;border:1px solid var(--line-2);border-radius:999px;color:var(--text-dim)}
+.cap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:760px){.cap-grid{grid-template-columns:1fr}}
+.cap{border:1px solid var(--line);border-radius:var(--radius);padding:30px 28px;background:var(--ink-2)}
+.cap .mono{font-size:.68rem;color:var(--amber);letter-spacing:.14em}
+.cap h3{font-size:1.1rem;margin:12px 0 8px}
+.cap p{font-size:.86rem;color:var(--text-dim)}
+.diagram{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(160deg,#191223,#11141F);padding:44px 34px;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+.dg-node{padding:16px 22px;border:1px solid var(--line-2);border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;background:var(--ink-2);text-align:center;min-width:140px;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.dg-node.hot{border-color:var(--amber);color:var(--amber);box-shadow:0 8px 30px rgba(244,69,61,.22)}
+.dg-arrow{padding:0 16px;color:var(--text-dim);font-size:1.1rem}
+@media(max-width:760px){.dg-arrow{transform:rotate(90deg);padding:10px 0}.diagram{flex-direction:column}}
+.proof-line{margin:0 auto;border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:14px;padding:28px 32px;background:var(--ink-2);max-width:860px}
+.proof-line p{font-family:'Schibsted Grotesk',sans-serif;font-weight:500;font-size:1.22rem;line-height:1.42;letter-spacing:-.01em}
+.proof-line span{display:block;margin-top:14px;font-size:.76rem;color:var(--text-dim);font-family:'IBM Plex Mono',monospace}
+.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:760px){.rel-grid{grid-template-columns:1fr}}
+
+/* ---------- SERVICES ---------- */
+.stem{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:980px){.stem{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.stem{grid-template-columns:1fr}}
+.stem-card{border:1px solid var(--line);border-radius:var(--radius);padding:32px 28px;background:var(--ink-2);display:flex;flex-direction:column;transition:.25s}
+.stem-card:hover{border-color:rgba(244,69,61,.45);transform:translateY(-3px);box-shadow:0 24px 50px rgba(0,0,0,.35)}
+.stem-card .big{font-family:'Schibsted Grotesk',sans-serif;font-size:2.6rem;font-weight:800;color:var(--amber);letter-spacing:-.04em}
+.stem-card h3{font-size:1.22rem;margin:8px 0 10px}
+.stem-card p{font-size:.85rem;color:var(--text-dim);flex:1}
+.stem-card .model{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--teal);letter-spacing:.06em}
+.stem-card ul{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.stem-card li{font-size:.82rem;color:var(--text-dim);display:flex;gap:9px}
+.stem-card li::before{content:"→";color:var(--amber)}
+
+/* ---------- SOLUTION SUBPAGE ---------- */
+.outcomes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:760px){.outcomes{grid-template-columns:1fr}}
+.outcome{border:1px solid var(--line);border-radius:var(--radius);padding:28px 26px;background:var(--ink-2)}
+.outcome b{display:block;font-family:'Schibsted Grotesk',sans-serif;font-size:1.7rem;font-weight:800;letter-spacing:-.02em;color:var(--amber);margin-bottom:6px}
+.outcome p{font-size:.85rem;color:var(--text-dim)}
+.mod-chips{display:flex;gap:10px;flex-wrap:wrap}
+.mod-chip{padding:13px 20px;border:1px solid var(--line-2);border-radius:999px;font-size:.84rem;font-weight:600;cursor:pointer;transition:.2s;background:var(--ink-2);color:var(--text)}
+.mod-chip:hover{border-color:var(--amber);color:var(--amber)}
+
+/* ---------- CUSTOMERS ---------- */
+.cust-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:760px){.cust-grid{grid-template-columns:1fr}}
+.cust-card{border:1px solid var(--line);border-radius:var(--radius);padding:34px 30px;background:var(--ink-2)}
+.cust-card .tag{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.14em;color:var(--teal);text-transform:uppercase}
+.cust-card h3{font-size:1.25rem;margin:14px 0 10px}
+.cust-card p{font-size:.87rem;color:var(--text-dim)}
+.cust-stats{display:flex;gap:26px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cust-stats div b{font-family:'Schibsted Grotesk',sans-serif;font-size:1.4rem;font-weight:800;display:block;letter-spacing:-.02em;color:var(--text)}
+.cust-stats div span{font-size:.72rem;color:var(--text-dim);font-family:'IBM Plex Mono',monospace}
+
+/* ---------- DEMO MODAL ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(5,6,8,.66);backdrop-filter:blur(6px);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:var(--ink-2);border:1px solid var(--line-2);border-radius:22px;max-width:480px;width:100%;padding:40px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.55)}
+.modal h3{font-size:1.5rem;margin-bottom:8px}
+.modal>p{font-size:.88rem;color:var(--text-dim);margin-bottom:26px}
+.modal label{display:block;font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin:16px 0 7px}
+.modal input,.modal select{width:100%;padding:13px 15px;background:var(--ink);border:1px solid var(--line-2);border-radius:11px;color:var(--text);font-family:'Archivo',sans-serif;font-size:.9rem}
+.modal input:focus,.modal select:focus{outline:none;border-color:var(--amber)}
+.modal .btn{width:100%;justify-content:center;margin-top:26px}
+.modal-x{position:absolute;top:16px;right:18px;background:none;border:none;color:var(--text-dim);font-size:1.3rem;cursor:pointer}
+.modal .ok{display:none;text-align:center;padding:30px 0 10px}
+.modal .ok .tick{font-size:2.4rem;color:var(--amber)}
+.modal.done form{display:none}.modal.done .ok{display:block}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo" onclick="go(&#39;home&#39;)">
+      <div class="logo-mark"></div>
+      <div class="logo-name">ad-core<span>.ai</span></div>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <div class="nav-item" id="ni-platform">
+        <a onclick="toggleDrop(this)">Platform <span class="caret">▾</span></a>
+        <div class="dropdown" id="dd-platform"><a onclick="go(&#39;overview&#39;)"><b>Platform Overview</b><small>One platform, two ways to run it — SaaS or partnership.</small></a><a onclick="go(&#39;module&#39;,&#39;identity-stack&#39;)"><b>01 · Identity Stack</b><small>Know every reader. Own every relationship.</small></a><a onclick="go(&#39;module&#39;,&#39;intelligence-engine&#39;)"><b>02 · Intelligence Engine</b><small>Turn journalism into data products.</small></a><a onclick="go(&#39;module&#39;,&#39;marketplace-engine&#39;)"><b>03 · Marketplace Engine</b><small>Launch transaction platforms on your brand.</small></a><a onclick="go(&#39;module&#39;,&#39;monetization-suite&#39;)"><b>04 · Monetization Suite</b><small>Every impression, fully valued.</small></a><a onclick="go(&#39;module&#39;,&#39;engagement-os&#39;)"><b>05 · Engagement OS</b><small>From audience to community to members.</small></a><a onclick="go(&#39;module&#39;,&#39;audience-amplifier&#39;)"><b>06 · Audience Amplifier</b><small>Own the traffic, not just the content.</small></a><a onclick="go(&#39;module&#39;,&#39;ai-analytics&#39;)"><b>07 · AI &amp; Analytics</b><small>Arabic-first intelligence, built in.</small></a></div>
+      </div>
+      <div class="nav-item" id="ni-solutions">
+        <a onclick="toggleDrop(this)">Solutions <span class="caret">▾</span></a>
+        <div class="dropdown" id="dd-solutions"><a onclick="go(&#39;solution&#39;,&#39;publishers&#39;)"><b>Publishers &amp; Media Owners</b><small>Print revenue is declining, audiences are anonymous, and decades…</small></a><a onclick="go(&#39;solution&#39;,&#39;retailers&#39;)"><b>Retailers &amp; Brands</b><small>You own purchase data and shopper attention, but the media value…</small></a><a onclick="go(&#39;solution&#39;,&#39;government&#39;)"><b>Government &amp; Institutions</b><small>National communications, procurement transparency and sector dat…</small></a><a onclick="go(&#39;solution&#39;,&#39;financial&#39;)"><b>Banks &amp; Insurers</b><small>Digital acquisition is expensive, generic, and disconnected from…</small></a></div>
+      </div>
+      <div class="nav-item"><a onclick="go(&#39;services&#39;)">Services</a></div>
+      <div class="nav-item"><a onclick="go(&#39;customers&#39;)">Customers</a></div>
+      <div class="nav-item"><a onclick="go(&#39;home&#39;,&#39;insights&#39;)">Resources</a></div>
+    </div>
+    <div class="nav-cta"><button class="btn btn-amber" onclick="openModal()">Book a Demo</button></div>
+    <button class="hamb" onclick="document.getElementById(&#39;navLinks&#39;).classList.toggle(&#39;open&#39;)">☰</button>
+  </div>
+</nav>
+
+<main id="app">
+ <section class="sub-hero">
+  <div class="grid-bg"></div><div class="hero-glow"></div>
+  <div class="wrap" style="position:relative">
+   <div class="crumb reveal in" style="transition-delay: 0ms;"><a onclick="go(&#39;home&#39;)">Home</a> / Platform / Overview</div>
+   <div class="kicker reveal in" style="transition-delay: 60ms;">Platform overview</div>
+   <h1 class="reveal in" style="transition-delay: 120ms;">One platform. <span class="em" style="color:var(--amber)">Two ways to run it.</span></h1>
+   <p class="lede reveal in" style="transition-delay: 180ms;">Media owners struggle to realise value from a pile of point solutions — siloed data, slow experience changes, lost opportunity. Ad-Core is one integrated chassis of seven modules, available as a SaaS license your team operates, or as a partnership where we build and operate with you.</p>
+   <div class="hero-ctas reveal in" style="transition-delay: 240ms;">
+     <button class="btn btn-amber" onclick="openModal()">Book a Demo <span class="arr">→</span></button>
+     <button class="btn btn-ghost" onclick="openModal()">Download the architecture paper</button>
+   </div>
+   <div class="flow flow-banner reveal in" style="transition-delay: 240ms;">
+     <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal in" style="transition-delay: 0ms;"><div><div class="kicker">Internal integration</div><h2>The loop is the product.</h2></div>
+   <p>Every module reads from, and writes back to, the same identity spine — so day-to-day use never burdens IT.</p></div>
+   <div class="diagram reveal in" style="transition-delay: 60ms;">
+     <div class="dg-node hot">IDENTIFY<br><small style="color:var(--text-dim)">Identity Stack</small></div><div class="dg-arrow">→</div>
+     <div class="dg-node">PACKAGE<br><small style="color:var(--text-dim)">Monetization Suite</small></div><div class="dg-arrow">→</div>
+     <div class="dg-node">CONVERT<br><small style="color:var(--text-dim)">Engagement OS</small></div><div class="dg-arrow">→</div>
+     <div class="dg-node">AMPLIFY<br><small style="color:var(--text-dim)">Audience Amplifier</small></div><div class="dg-arrow">→</div>
+     <div class="dg-node">MEASURE<br><small style="color:var(--text-dim)">AI &amp; Analytics</small></div><div class="dg-arrow">↺</div>
+   </div>
+   <div class="proof-line reveal in" style="margin-top: 24px; max-width: none; transition-delay: 120ms;">
+     <p>Build a segment of banking-content readers in the Identity Stack, package them as a premium audience deal in the Monetization Suite, acquire their lookalikes on social through the Amplifier, convert them to members in Engagement OS — and report on the whole journey in Analytics. Then run it in reverse.</p>
+     <span>EVERY SEGMENT IS EXPORTABLE · EVERY MODULE SHARES ONE DATA MODEL</span>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal in" style="transition-delay: 180ms;"><div><div class="kicker">Deployment models</div><h2>SaaS license, or operated partnership.</h2></div></div>
+   <div class="cap-grid">
+     <div class="cap reveal in" style="transition-delay: 240ms;"><div class="mono">MODEL A · SAAS</div><h3>Platform license</h3><p>License modules individually or as a stack. Annual license plus usage, with implementation, managed connectors, training and certification, regional hosting and PDPL-ready compliance included. Your team operates; our Academy keeps them certified.</p></div>
+     <div class="cap reveal in" style="transition-delay: 240ms;"><div class="mono">MODEL B · PARTNERSHIP</div><h3>Build · Operate · Own</h3><p>We deploy the chassis, launch the revenue lines and operate them under long-term agreements — retainer plus revenue share on monetisation, JV equity on platform ventures, and a build–operate–transfer path when you're ready to insource.</p></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal in" style="transition-delay: 0ms;"><div><div class="kicker">Data portability</div><h2>Data in, data out. No lock-in.</h2></div></div>
+   <div class="cap-grid">
+     <div class="cap reveal in" style="transition-delay: 60ms;"><div class="mono">DATA IN</div><h3>Ingestion points</h3><p>Behavioural events (JS tags + server-side APIs, unsampled, real time) · CRM and subscriber-file imports, print included · Event registration and delegate data · External segments · Contextual data (Arabic + English).</p></div>
+     <div class="cap reveal in" style="transition-delay: 120ms;"><div class="mono">DATA OUT</div><h3>Export &amp; sync</h3><p>Real-time segment exports and webhooks · Clean-room matches with banks, telcos and retailers · Third-party identifier sync (ID5, UID2.0) · Warehouse and BI exports · Full log access.</p></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal in" style="transition-delay: 180ms;"><div><div class="kicker">Architecture</div><h2>Real-time engine, regional residency.</h2></div></div>
+   <div class="cap-grid">
+     <div class="cap reveal in" style="transition-delay: 240ms;"><div class="mono">SPEED</div><h3>Event to action in milliseconds</h3><p>A real-time in-memory engine for segmentation and journey decisions, synchronised with a warehouse layer for analytics and data products — one platform, both speeds.</p></div>
+     <div class="cap reveal in" style="transition-delay: 240ms;"><div class="mono">RESIDENCY</div><h3>GCC data residency &amp; PDPL</h3><p>Regional hosting with data-residency options per market, consent built into the spine, and Arabic-first data models and taxonomies global platforms don't carry.</p></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight" style="padding-bottom:120px">
+  <div class="wrap">
+   <div class="sec-head reveal in" style="transition-delay: 0ms;"><div><div class="kicker">The modules</div><h2>Explore the chassis.</h2></div></div>
+   <div class="mod-grid">
+  <div class="mod-card reveal in" onclick="go(&#39;module&#39;,&#39;identity-stack&#39;)" style="transition-delay: 60ms;">
+    <div class="mod-num">MODULE 01</div>
+    <div class="mod-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"></circle><path d="M5 19c1.4-3.2 4-4.6 7-4.6s5.6 1.4 7 4.6"></path><circle cx="19" cy="5" r="1.6"></circle><circle cx="5" cy="5" r="1.6"></circle></svg></div>
+    <h3>Identity Stack</h3>
+    <p>First-party identity infrastructure — login, ID graph, CDP and consent — that turns anonymous traffic into addressable, high-CPM audiences.</p>
+    <div class="mod-link">Explore Identity Stack <span class="arr">→</span></div>
+  </div>
+  <div class="mod-card reveal in" onclick="go(&#39;module&#39;,&#39;intelligence-engine&#39;)" style="transition-delay: 120ms;">
+    <div class="mod-num">MODULE 02</div>
+    <div class="mod-icon"><svg viewBox="0 0 24 24"><path d="M4 19V9m5.5 10V5M15 19v-8m5 8V12"></path><path d="M3 19h18"></path></svg></div>
+    <h3>Intelligence Engine</h3>
+    <p>Ingestion, entity resolution and SaaS delivery that converts editorial archives into subscription intelligence — tenders, projects, companies, sectors.</p>
+    <div class="mod-link">Explore Intelligence Engine <span class="arr">→</span></div>
+  </div>
+  <div class="mod-card reveal in" onclick="go(&#39;module&#39;,&#39;marketplace-engine&#39;)" style="transition-delay: 180ms;">
+    <div class="mod-num">MODULE 03</div>
+    <div class="mod-icon"><svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="7" height="7" rx="1.6"></rect><rect x="13.5" y="4" width="7" height="7" rx="1.6"></rect><rect x="3.5" y="14" width="7" height="7" rx="1.6"></rect><path d="M17 14v7m-3.5-3.5h7"></path></svg></div>
+    <h3>Marketplace Engine</h3>
+    <p>Configurable listings, comparison, lead-routing and payments — the chassis behind comparison platforms, SME marketplaces and vertical classifieds.</p>
+    <div class="mod-link">Explore Marketplace Engine <span class="arr">→</span></div>
+  </div>
+  <div class="mod-card reveal in" onclick="go(&#39;module&#39;,&#39;monetization-suite&#39;)" style="transition-delay: 240ms;">
+    <div class="mod-num">MODULE 04</div>
+    <div class="mod-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v9M9.4 9.6c.5-.9 1.5-1.4 2.6-1.4 1.6 0 2.8.9 2.8 2.1 0 2.7-5.4 1.6-5.4 4.2 0 1.2 1.2 2.1 2.8 2.1 1.1 0 2.1-.5 2.6-1.4"></path></svg></div>
+    <h3>Monetization Suite</h3>
+    <p>Sponsored serving, PMP curation, affiliate tracking and closed-loop attribution across owned properties and partner platforms.</p>
+    <div class="mod-link">Explore Monetization Suite <span class="arr">→</span></div>
+  </div>
+  <div class="mod-card reveal in" onclick="go(&#39;module&#39;,&#39;engagement-os&#39;)" style="transition-delay: 240ms;">
+    <div class="mod-num">MODULE 05</div>
+    <div class="mod-icon"><svg viewBox="0 0 24 24"><path d="M4 6.5h16v11H4z"></path><path d="M4 7l8 6 8-6"></path></svg></div>
+    <h3>Engagement OS</h3>
+    <p>Journey orchestration, subscription commerce, newsletters, memberships and events — the recurring-revenue layer that converts readers into paying communities.</p>
+    <div class="mod-link">Explore Engagement OS <span class="arr">→</span></div>
+  </div>
+  <div class="mod-card reveal in" onclick="go(&#39;module&#39;,&#39;audience-amplifier&#39;)" style="transition-delay: 0ms;">
+    <div class="mod-num">MODULE 06</div>
+    <div class="mod-icon"><svg viewBox="0 0 24 24"><path d="M4 11l12-6v14L4 13v-2z"></path><path d="M16 8.5c2 .6 3.5 1.9 3.5 3.5s-1.5 2.9-3.5 3.5"></path><path d="M7 13.5V18c0 1 .8 1.8 1.8 1.8S10.5 19 10.5 18v-3"></path></svg></div>
+    <h3>Audience Amplifier</h3>
+    <p>Social distribution, push notifications and managed paid campaigns that drive audiences to owned properties — and into the ID graph.</p>
+    <div class="mod-link">Explore Audience Amplifier <span class="arr">→</span></div>
+  </div>
+  <div class="mod-card reveal in" onclick="go(&#39;module&#39;,&#39;ai-analytics&#39;)" style="transition-delay: 60ms;">
+    <div class="mod-num">MODULE 07</div>
+    <div class="mod-icon"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="3"></rect><path d="M12 2v3M12 19v3M2 12h3M19 12h3M9 9.5h.01M15 9.5h.01M9 14.5c1 .8 2 .8 3 .8s2 0 3-.8"></path></svg></div>
+    <h3>AI &amp; Analytics</h3>
+    <p>Personalisation, AI content operations in Arabic and English, and predictive scoring threaded through every module of the chassis.</p>
+    <div class="mod-link">Explore AI &amp; Analytics <span class="arr">→</span></div>
+  </div></div>
+  </div>
+ </section></main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo" onclick="go(&#39;home&#39;)">
+          <div class="logo-mark"></div>
+          <div class="logo-name">ad-core<span>.ai</span></div>
+        </div>
+        <p>Monetization infrastructure and platform venture-building for media owners across the GCC. Build, operate, own.</p>
+      </div>
+      <div>
+        <h4>Platform</h4>
+        <div id="foot-platform"><a onclick="go(&#39;overview&#39;)">Platform Overview</a><a onclick="go(&#39;module&#39;,&#39;identity-stack&#39;)">Identity Stack</a><a onclick="go(&#39;module&#39;,&#39;intelligence-engine&#39;)">Intelligence Engine</a><a onclick="go(&#39;module&#39;,&#39;marketplace-engine&#39;)">Marketplace Engine</a><a onclick="go(&#39;module&#39;,&#39;monetization-suite&#39;)">Monetization Suite</a><a onclick="go(&#39;module&#39;,&#39;engagement-os&#39;)">Engagement OS</a><a onclick="go(&#39;module&#39;,&#39;audience-amplifier&#39;)">Audience Amplifier</a><a onclick="go(&#39;module&#39;,&#39;ai-analytics&#39;)">AI &amp; Analytics</a></div>
+      </div>
+      <div>
+        <h4>Solutions</h4>
+        <div id="foot-solutions"><a onclick="go(&#39;solution&#39;,&#39;publishers&#39;)">Publishers &amp; Media Owners</a><a onclick="go(&#39;solution&#39;,&#39;retailers&#39;)">Retailers &amp; Brands</a><a onclick="go(&#39;solution&#39;,&#39;government&#39;)">Government &amp; Institutions</a><a onclick="go(&#39;solution&#39;,&#39;financial&#39;)">Banks &amp; Insurers</a></div>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a onclick="go(&#39;services&#39;)">Services</a>
+        <a onclick="go(&#39;customers&#39;)">Customers</a>
+        <a onclick="openModal()">Contact</a>
+        <a onclick="openModal()">Careers</a>
+        <a onclick="go(&#39;home&#39;,&#39;insights&#39;)">Insights</a>
+        <a onclick="openModal()">Documentation</a>
+        <a onclick="openModal()">Compliance · PDPL</a>
+        <a onclick="openModal()">Integrations</a>
+        <a onclick="openModal()">Status</a>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>© 2026 AD-CORE.AI — MUSCAT · DUBAI · RIYADH</span>
+      <span>EN / العربية</span>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal">
+    <button class="modal-x" onclick="closeModal()">×</button>
+    <h3>Book a demo</h3>
+    <p>See what your audience is worth. A 30-minute walkthrough of the platform, mapped to your titles and data.</p>
+    <form onsubmit="event.preventDefault();document.getElementById(&#39;modal&#39;).classList.add(&#39;done&#39;)">
+      <label>Full name</label>
+      <input required="" placeholder="Your name">
+      <label>Work email</label>
+      <input required="" type="email" placeholder="you@company.com">
+      <label>Organization type</label>
+      <select>
+        <option>Publisher / Media owner</option>
+        <option>Retailer / Brand</option>
+        <option>Government / Institution</option>
+        <option>Bank / Insurer</option>
+        <option>Other</option>
+      </select>
+      <button class="btn btn-amber">Request demo <span class="arr">→</span></button>
+    </form>
+    <div class="ok">
+      <div class="tick">✓</div>
+      <h3>Request received</h3>
+      <p style="color:var(--text-dim);font-size:.88rem;margin-top:8px">Our team will reach out within one business day.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ DATA ============ */
+const MODULES = [
+ {id:"identity-stack",num:"01",name:"Identity Stack",pos:"Know every reader. Own every relationship.",
+  short:"First-party identity infrastructure — login, ID graph, CDP and consent — that turns anonymous traffic into addressable, high-CPM audiences.",
+  who:["Publishers","Broadcasters","Event organisers"],
+  icon:'<circle cx="12" cy="8" r="3.2"/><path d="M5 19c1.4-3.2 4-4.6 7-4.6s5.6 1.4 7 4.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="5" r="1.6"/>',
+  caps:[
+   {k:"SSO + LOGIN",h:"First-party login & SSO",d:"A single sign-on across every title, portal, newsletter and event — registration walls tuned to convert without killing reach."},
+   {k:"GRAPH",h:"Deterministic ID graph",d:"Stitch email, event attendance, subscription, app and behavioural signals into one persistent person-level profile."},
+   {k:"CDP",h:"Segmentation & activation",d:"Build segments like “CFOs in Muscat who attended FINSEC and read banking content” — and activate them on-property or off."},
+   {k:"PRIVACY",h:"Consent & clean-room connector",d:"PDPL-ready consent management plus secure matching with banks, telcos and retailers — collaborate on data without exposing it."}],
+  flow:["Anonymous visitor","Login / capture","ID graph","Segments","Activation"],
+  proof:"Identity-linked inventory commands 4–8× the CPM of anonymous programmatic. The graph is the single highest-ROI asset a publisher can build.",
+  proofSrc:"AD-CORE BENCHMARK · GCC PUBLISHER DEPLOYMENTS"},
+ {id:"intelligence-engine",num:"02",name:"Intelligence Engine",pos:"Turn journalism into data products.",
+  short:"Ingestion, entity resolution and SaaS delivery that converts editorial archives into subscription intelligence — tenders, projects, companies, sectors.",
+  who:["Publishers","Research houses","Government"],
+  icon:'<path d="M4 19V9m5.5 10V5M15 19v-8m5 8V12"/><path d="M3 19h18"/>',
+  caps:[
+   {k:"INGEST",h:"Ingestion & entity resolution",d:"Pipelines for gazettes, registries, tender notices and editorial archives — resolved into clean company, project and people entities."},
+   {k:"TAXONOMY",h:"Arabic-English taxonomy",d:"Bilingual sector and topic taxonomies built for GCC markets — the data model global vendors don't have."},
+   {k:"DELIVERY",h:"SaaS delivery shell",d:"White-label dashboards, real-time alerts, APIs and automated weekly briefings — launched on your brand in months."},
+   {k:"AI OPS",h:"Briefing automation",d:"AI-assisted summarisation and translation turns every article into structured signals feeding the product."}],
+  flow:["Sources","Entity resolution","Taxonomy","Intelligence DB","Subscriptions / API"],
+  proof:"One engine, four businesses: the same chassis powers tender intelligence, commercial intelligence, real-estate data and energy-sector products.",
+  proofSrc:"AD-CORE PLATFORM ARCHITECTURE"},
+ {id:"marketplace-engine",num:"03",name:"Marketplace Engine",pos:"Launch transaction platforms on your brand.",
+  short:"Configurable listings, comparison, lead-routing and payments — the chassis behind comparison platforms, SME marketplaces and vertical classifieds.",
+  who:["Publishers","Banks & insurers","Chambers & trade bodies"],
+  icon:'<rect x="3.5" y="4" width="7" height="7" rx="1.6"/><rect x="13.5" y="4" width="7" height="7" rx="1.6"/><rect x="3.5" y="14" width="7" height="7" rx="1.6"/><path d="M17 14v7m-3.5-3.5h7"/>',
+  caps:[
+   {k:"LISTINGS",h:"Listings & verified profiles",d:"Structured supplier, product and property listings with verification, ratings and bilingual content management."},
+   {k:"COMPARE",h:"Comparison & quote module",d:"Provider API integrations for real-time quotes across insurance, banking and services — the NerdWallet engine, localised."},
+   {k:"LEADS",h:"Lead capture & routing",d:"Qualified-lead scoring, routing and CPA tracking so every referred application is measured and billed."},
+   {k:"PAY",h:"Payments & transactions",d:"Regional payment rails, escrow options and transaction reporting for full marketplace operation."}],
+  flow:["Editorial traffic","Marketplace","Quote / match","Qualified lead","Provider / CPA"],
+  proof:"Media is the acquisition funnel; the platform is the revenue engine. Schibsted's classifieds became worth more than its newspapers.",
+  proofSrc:"THE SCHIBSTED / AXEL SPRINGER MODEL"},
+ {id:"monetization-suite",num:"04",name:"Monetization Suite",pos:"Every impression, fully valued.",
+  short:"Sponsored serving, PMP curation, affiliate tracking and closed-loop attribution across owned properties and partner platforms.",
+  who:["Publishers","Retailers","Marketplace operators"],
+  icon:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.4 9.6c.5-.9 1.5-1.4 2.6-1.4 1.6 0 2.8.9 2.8 2.1 0 2.7-5.4 1.6-5.4 4.2 0 1.2 1.2 2.1 2.8 2.1 1.1 0 2.1-.5 2.6-1.4"/>',
+  caps:[
+   {k:"NATIVE",h:"Sponsored & native serving",d:"Sponsored listings, shoppable content and native placements that monetise without degrading editorial trust."},
+   {k:"PMP",h:"Programmatic curation",d:"Private marketplaces packaging identity-linked inventory at premium CPMs instead of open-exchange floor prices."},
+   {k:"AFFILIATE",h:"Affiliate & CPA tracking",d:"Full-funnel tracking for commerce content, comparison referrals and financial-product lead generation."},
+   {k:"ATTRIBUTION",h:"Closed-loop attribution",d:"Prove campaigns worked — match exposure to outcomes through the Identity Stack and clean-room partnerships."}],
+  flow:["Inventory + identity","Packaging","PMP / direct","Campaign","Attribution"],
+  proof:"Curation shifts pricing power back to the media owner: packaged audience deals at premium CPMs, not commodity impressions.",
+  proofSrc:"AD-CORE MONETIZATION DESK"},
+ {id:"engagement-os",num:"05",name:"Engagement OS",pos:"From audience to community to members.",
+  short:"Journey orchestration, subscription commerce, newsletters, memberships and events — the recurring-revenue layer that converts readers into paying communities.",
+  who:["Publishers","Event organisers","Professional networks"],
+  icon:'<path d="M4 6.5h16v11H4z"/><path d="M4 7l8 6 8-6"/>',
+  caps:[
+   {k:"COMPOSER",h:"Journey Composer",d:"A no-IT rules engine for registration walls, dynamic offers and personalised journeys — tuned to optimise revenue and first-party data capture together."},
+   {k:"COMMERCE",h:"Subscription commerce",d:"Offers, promotions and recurring billing with conversion analytics, churn signals, win-back flows and account-sharing detection."},
+   {k:"PRINT+DIGITAL",h:"Print + digital bundling",d:"Manage legacy print circulations alongside digital access — bundle pricing, delivery integration and a single subscriber record across both."},
+   {k:"NEWSLETTER",h:"Newsletter & CRM engine",d:"Vertical newsletters with growth loops, sponsorship slots and behavioural data feeding the ID graph."},
+   {k:"MEMBERSHIP",h:"Tiers, billing & benefits",d:"Professional, executive and corporate tiers with recurring billing, member directories and benefit management."},
+   {k:"EVENTS",h:"Events & matchmaking",d:"Registration, sponsor CRM, delegate apps, hybrid delivery and curated deal-flow introductions — every event becomes a data asset."}],
+  flow:["Reader","Newsletter","Event","Member","Recurring revenue"],
+  proof:"Membership is the connective tissue — every other revenue stream feeds into, or draws from, the member base.",
+  proofSrc:"AD-CORE ECOSYSTEM DESIGN"},
+ {id:"audience-amplifier",num:"06",name:"Audience Amplifier",pos:"Own the traffic, not just the content.",
+  short:"Social distribution, push notifications and managed paid campaigns that drive audiences to owned properties — and into the ID graph.",
+  who:["Publishers","Marketplace operators","Event organisers"],
+  icon:'<path d="M4 11l12-6v14L4 13v-2z"/><path d="M16 8.5c2 .6 3.5 1.9 3.5 3.5s-1.5 2.9-3.5 3.5"/><path d="M7 13.5V18c0 1 .8 1.8 1.8 1.8S10.5 19 10.5 18v-3"/>',
+  caps:[
+   {k:"SOCIAL",h:"Social-native distribution",d:"Organic publishing and platform-specific content operations across Instagram, TikTok, LinkedIn and X — merchandising content that drives owned traffic."},
+   {k:"PUSH",h:"Push & notifications",d:"Web and app push orchestrated with newsletters for re-engagement loops that compound retention."},
+   {k:"PAID",h:"Managed campaign buying",d:"Data-driven paid social campaigns that acquire lookalikes of your best segments and convert social audiences into registered users."},
+   {k:"OPTIMISE",h:"Campaign optimisation",d:"Cross-channel attribution back to registration, subscription and lead events — ROAS measured against revenue, not clicks."}],
+  flow:["Content","Social / push","Owned traffic","Registration","ID graph"],
+  proof:"Audience development closes the loop: build a segment, acquire its lookalikes on social, convert them on-property, measure everything in one place.",
+  proofSrc:"AD-CORE AUDIENCE DESK"},
+ {id:"ai-analytics",num:"07",name:"AI & Analytics",pos:"Arabic-first intelligence, built in.",
+  short:"Personalisation, AI content operations in Arabic and English, and predictive scoring threaded through every module of the chassis.",
+  who:["All platform clients"],
+  icon:'<rect x="5" y="5" width="14" height="14" rx="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M9 9.5h.01M15 9.5h.01M9 14.5c1 .8 2 .8 3 .8s2 0 3-.8"/>',
+  caps:[
+   {k:"PERSONALISE",h:"Recommendations",d:"Content, product and event recommendations that lift engagement and feed first-party data collection."},
+   {k:"CONTENT AI",h:"AI content operations",d:"Bilingual summarisation, translation and briefing generation — multiplying editorial output without multiplying headcount."},
+   {k:"SCORING",h:"Predictive scoring",d:"Lead quality, churn risk and bid win-rate models tuned on regional data."},
+   {k:"BI",h:"Unified analytics",d:"One reporting layer across content, audience, revenue and platform KPIs — the new success metrics, instrumented."}],
+  flow:["Signals","Models","Scores","Actions","Lift"],
+  proof:"Arabic-language AI operations are the capability gap global platforms can't close quickly — and the moat regional ones can.",
+  proofSrc:"AD-CORE AI LAB"}
+];
+
+const SOLUTIONS = [
+ {id:"publishers",num:"S1",name:"Publishers & Media Owners",
+  pain:"Print revenue is declining, audiences are anonymous, and decades of editorial trust sit unmonetised.",
+  lede:"Diversify beyond advertising. We build identity, intelligence products, memberships and marketplaces on your editorial trust — and operate them with you.",
+  outcomes:[{b:"4–8×",p:"CPM uplift on identity-linked inventory vs. anonymous programmatic"},{b:"9–15 mo",p:"From signed mandate to live platform revenue"},{b:"3 layers",p:"Strengthen core, add adjacent products, launch platform ventures"}],
+  mods:["identity-stack","intelligence-engine","engagement-os","monetization-suite"],
+  story:"A leading Gulf publishing group converted seven portals and an events portfolio into a unified identity base of named decision-makers — unlocking premium audience packages, a commercial-intelligence subscription and a CXO membership in under 18 months."},
+ {id:"retailers",num:"S2",name:"Retailers & Brands",
+  pain:"You own purchase data and shopper attention, but the media value flows to platforms you don't control.",
+  lede:"Launch your own commerce media business — sponsored listings, audience access and closed-loop measurement on your digital shelf.",
+  outcomes:[{b:"RMN",p:"Retail media network launched on your properties, your rate card"},{b:"1P data",p:"Shopper segments packaged for endemic and non-endemic brands"},{b:"Closed loop",p:"Exposure matched to sales through the Identity Stack"}],
+  mods:["monetization-suite","identity-stack","ai-analytics"],
+  story:"Regional retailers are following the global playbook: commerce media is the fastest-growing ad segment, and the infrastructure to capture it is now deployable in one quarter."},
+ {id:"government",num:"S3",name:"Government & Institutions",
+  pain:"National communications, procurement transparency and sector data live in fragmented portals and PDFs.",
+  lede:"Digital publishing platforms, tender and procurement portals, and national data products — delivered bilingual, on time, at scale.",
+  outcomes:[{b:"AR / EN",p:"Bilingual platforms with full editorial production behind them"},{b:"OMR 2–3Bn",p:"Annual tender flow made searchable, alertable, analysable"},{b:"Vision 2040",p:"Diversification reporting and sector intelligence, productised"}],
+  mods:["intelligence-engine","marketplace-engine","engagement-os"],
+  story:"From ministry annual reports to a national projects-intelligence layer: institutional publishing relationships become the data backbone for procurement and investment platforms."},
+ {id:"financial",num:"S4",name:"Banks & Insurers",
+  pain:"Digital acquisition is expensive, generic, and disconnected from the trusted channels affluent customers actually read.",
+  lede:"Distribute products through trusted media audiences — comparison listings, qualified lead generation and clean-room data collaboration.",
+  outcomes:[{b:"$15–80",p:"Cost per qualified lead via comparison and content channels"},{b:"18+ banks",p:"One integration reaches every provider on the platform"},{b:"Clean room",p:"Match your CRM to media audiences — privately, compliantly"}],
+  mods:["marketplace-engine","identity-stack","monetization-suite"],
+  story:"Insurance penetration in Oman is ~1.5% of GDP versus 3–4% in the UAE. The growth gap closes through trusted distribution — not more display ads."}
+];
+
+const INSIGHTS = [
+ {tag:"Playbook",h:"The GCC Publisher's Guide to First-Party Data: from anonymous traffic to an addressable audience in 12 months",meta:"PDF · 24 PAGES"},
+ {tag:"Analysis",h:"Why identity-linked inventory prices at 4–8× — and what that means for Gulf media owners",meta:"8 MIN READ"},
+ {tag:"Briefing",h:"After the Publicis–LiveRamp deal: the case for a neutral, regional identity layer",meta:"6 MIN READ"}
+];
+
+const CUSTOMERS = [
+ {tag:"Publishing Group · Oman",h:"From seven portals to one audience",p:"Unified login and ID graph across business, women's and luxury titles; premium audience packages launched with the national telecom and two banks.",stats:[{b:"38K",s:"IDENTIFIED PROFILES"},{b:"5.2×",s:"DIRECT CPM UPLIFT"},{b:"11 mo",s:"TO BREAK-EVEN"}]},
+ {tag:"Events Business · GCC",h:"Every delegate becomes data",p:"Events stack deployed across a 12-event portfolio; delegate intelligence now powers sponsorship pricing and a CXO membership tier.",stats:[{b:"24K",s:"DELEGATE PROFILES"},{b:"+41%",s:"SPONSORSHIP YIELD"},{b:"420",s:"PAYING MEMBERS"}]},
+ {tag:"Ministry Programme · Pilot",h:"Tenders, made searchable",p:"Procurement notices aggregated, entity-resolved and delivered as alerts and analytics to suppliers — freemium to paid conversion ahead of plan.",stats:[{b:"2,100+",s:"LIVE TENDERS INDEXED"},{b:"640",s:"SUPPLIER ACCOUNTS"},{b:"9%",s:"FREE→PRO CONVERSION"}]},
+ {tag:"Insurance Vertical · Beta",h:"Comparison, with credibility",p:"Car-insurance comparison MVP embedded in trusted editorial; provider APIs deliver real-time quotes and measured, billable applications.",stats:[{b:"7",s:"PROVIDERS INTEGRATED"},{b:"$22",s:"AVG COST / QUALIFIED LEAD"},{b:"3.4%",s:"QUOTE→BIND RATE"}]}
+];
+
+/* ============ HELPERS ============ */
+const app = document.getElementById('app');
+function icon(svg){return `<svg viewBox="0 0 24 24">${svg}</svg>`}
+function modCard(m){return `
+  <div class="mod-card reveal" onclick="go('module','${m.id}')">
+    <div class="mod-num">MODULE ${m.num}</div>
+    <div class="mod-icon">${icon(m.icon)}</div>
+    <h3>${m.name}</h3>
+    <p>${m.short}</p>
+    <div class="mod-link">Explore ${m.name} <span class="arr">→</span></div>
+  </div>`}
+
+/* ============ PAGES ============ */
+function renderHome(){
+ app.innerHTML = `
+ <section class="hero">
+  <div class="grid-bg"></div>
+  <div class="hero-glow"></div><div class="hero-glow b"></div>
+  <div class="wrap" style="position:relative">
+   <div class="kicker reveal">Monetization infrastructure · GCC</div>
+   <h1 class="reveal">Turn audience trust into <span class="em">platform revenue.</span></h1>
+   <p class="lede reveal">Ad-Core is the monetization infrastructure and venture-building partner for media owners in the GCC — identity, intelligence and marketplaces, built on your brand and operated with you.</p>
+   <div class="hero-ctas reveal">
+     <button class="btn btn-amber" onclick="openModal()">Book a Demo <span class="arr">→</span></button>
+     <button class="btn btn-ghost" onclick="go('overview')">Explore the Platform</button>
+   </div>
+   <div class="hero-meta reveal">
+     <div class="m"><b>4–8<i>×</i></b><span>CPM ON IDENTITY-LINKED INVENTORY</span></div>
+     <div class="m"><b>9–15<i> mo</i></b><span>MANDATE → PLATFORM REVENUE</span></div>
+     <div class="m"><b>7</b><span>CHASSIS MODULES, ONE STACK</span></div>
+   </div>
+   <div class="hero-art">
+     <div class="id-graph" id="idg">
+       <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+       <svg id="idgSvg"></svg>
+       <div class="g-hint">DRAG THE NODES</div>
+     </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="problem tight section">
+  <div class="wrap">
+   <div class="problem-grid">
+     <div class="problem-cell reveal"><h3>Your audience is your most valuable asset. It's also your <span class="em">least monetised.</span></h3></div>
+     <div class="problem-cell reveal"><b>−2.5<i>%</i></b><p>CAGR on regional print revenue — digital substitution is structural, not cyclical.</p></div>
+     <div class="problem-cell reveal"><b>~95<i>%</i></b><p>of publisher traffic remains anonymous — unaddressable, unpriceable, unactivatable.</p></div>
+     <div class="problem-cell reveal"><b>0</b><p>GCC-native platforms combining identity, intelligence and marketplace infrastructure for media owners. Until now.</p></div>
+   </div>
+  </div>
+ </section>
+
+ <section style="padding:38px 0;border-bottom:1px solid var(--line);overflow:hidden">
+   <div class="marquee" id="mq"><div class="mq-track" id="mqTrack"></div></div>
+ </section>
+
+ <section class="section">
+  <div class="grid-bg"></div>
+  <div class="wrap">
+   <div class="sec-head reveal">
+     <div><div class="kicker">The Platform</div><h2>One chassis. Seven modules. Every revenue layer.</h2></div>
+     <p>License it as SaaS, or have us build and operate on it — the same infrastructure powers audience monetisation, data products and full marketplace ventures. <a onclick="go('overview')" style="color:var(--amber);cursor:pointer;font-weight:600">See how it integrates →</a></p>
+   </div>
+   <div class="mod-grid">${MODULES.map(modCard).join('')}</div>
+  </div>
+ </section>
+
+ <section class="section how light">
+  <div class="wrap">
+   <div class="sec-head reveal">
+     <div><div class="kicker">How we work</div><h2>Enable. Build. Operate.</h2></div>
+     <p>We're not an agency, and we don't leave after the strategy deck. We deploy infrastructure, launch ventures, and run them with you.</p>
+   </div>
+   <div class="how-steps reveal">
+     <div class="how-step">
+       <div class="stage"><span>Stage 01</span><span>Layer 2</span></div>
+       <h3>Enable</h3>
+       <p>Deploy the monetization infrastructure on your properties.</p>
+       <ul><li>Identity Stack & CDP, managed</li><li>Audience monetization desk</li><li>Intelligence product factory</li><li>RMN & membership platforms</li></ul>
+     </div>
+     <div class="how-step">
+       <div class="stage"><span>Stage 02</span><span>Layer 3</span></div>
+       <h3>Build</h3>
+       <p>Launch platform ventures as joint businesses on your brand.</p>
+       <ul><li>Tenders & procurement portals</li><li>Comparison & aggregator platforms</li><li>Vertical marketplaces</li><li>Events-as-a-service platforms</li></ul>
+     </div>
+     <div class="how-step">
+       <div class="stage"><span>Stage 03</span><span>Run-rate</span></div>
+       <h3>Operate</h3>
+       <p>Grow the businesses under long-term operating agreements.</p>
+       <ul><li>Growth marketing & partnerships</li><li>Pricing & product roadmap</li><li>Sales-as-a-service</li><li>Build–operate–transfer option</li></ul>
+     </div>
+   </div>
+   <div class="how-foot reveal">
+     <p>Retainers fund the bench. Revenue share aligns incentives. <span class="em">JV equity creates the multiples.</span></p>
+     <button class="btn btn-ink" onclick="go('services')">See the services model <span class="arr">→</span></button>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight" style="border-top:1px solid var(--line)">
+  <div class="wrap">
+   <div class="sec-head reveal">
+     <div><div class="kicker">Engagement models</div><h2>Two ways to work with us.</h2></div>
+     <p>Run the platform yourself, or have us run it with you — most partners start with one and grow into both.</p>
+   </div>
+   <div class="sol-grid">
+     <div class="sol-tile reveal" onclick="go('overview')">
+       <div class="mono">MODEL A</div>
+       <h3>Platform — SaaS</h3>
+       <p>License any of the seven modules and operate them with your team. Implementation, managed connectors, training and certification, regional hosting, and Arabic-first data models included.</p>
+       <div class="mod-link" style="margin-top:18px">Platform overview <span class="arr">→</span></div>
+     </div>
+     <div class="sol-tile reveal" onclick="go('services')">
+       <div class="mono">MODEL B</div>
+       <h3>Partnership — Build · Operate · Own</h3>
+       <p>We deploy the chassis, launch the venture and operate it under long-term agreements — retainers plus revenue share, with JV equity on platform plays and a build–operate–transfer path.</p>
+       <div class="mod-link" style="margin-top:18px">Services & STEM approach <span class="arr">→</span></div>
+     </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section proof">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Proof</div><h2>Infrastructure that pays for itself.</h2></div></div>
+   <div class="proof-stats">
+     <div class="stat reveal"><b>4–8<i>×</i></b><span>CPM uplift on identity-linked vs. anonymous inventory</span></div>
+     <div class="stat reveal"><b>9–15<i> mo</i></b><span>typical time from mandate to live platform revenue</span></div>
+     <div class="stat reveal"><b>30–50K</b><span>identified decision-makers, the asset under management per anchor partner</span></div>
+   </div>
+   <div class="logo-row reveal">
+     <div class="logo-cell">PUBLISHING GROUPS</div><div class="logo-cell">EVENT PORTFOLIOS</div><div class="logo-cell">GOVERNMENT PROGRAMMES</div><div class="logo-cell">BANKS & INSURERS</div><div class="logo-cell">RETAIL GROUPS</div>
+   </div>
+   <div class="logo-note">PARTNER LOGOS SHOWN UNDER NDA · PROTOTYPE PLACEHOLDERS</div>
+   <div class="proof-line reveal" style="margin-top:44px;max-width:none">
+     <p>Ad-Core Benchmarks — the GCC media performance index. Engagement, registration, conversion and yield benchmarks drawn from every deployment, so you can measure yourself against the region, not just yourself.</p>
+     <span>INCLUDED WITH EVERY PLATFORM LICENSE · FIRST REGIONAL DATASET OF ITS KIND</span>
+   </div>
+  </div>
+ </section>
+
+ <section class="section">
+  <div class="wrap">
+   <div class="sec-head reveal">
+     <div><div class="kicker">Solutions</div><h2>Built for the owners of audience and trust.</h2></div>
+   </div>
+   <div class="sol-grid">
+     ${SOLUTIONS.map(s=>`
+     <div class="sol-tile reveal" onclick="go('solution','${s.id}')">
+       <div class="mono">${s.num}</div>
+       <h3>${s.name}</h3>
+       <p>${s.lede}</p>
+       <div class="mod-link" style="margin-top:18px">View solution <span class="arr">→</span></div>
+     </div>`).join('')}
+   </div>
+  </div>
+ </section>
+
+ <section class="section case">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Featured case</div><h2>From magazines to a monetization ecosystem.</h2></div></div>
+   <div class="case-card reveal">
+     <div>
+       <div class="case-quote">"We stopped selling pages and started selling <b>audiences, intelligence and access</b>. Ad-Core built the rails — and runs them with us."</div>
+       <div class="case-attr"><b>Group Commercial Director</b>Gulf publishing & events group · anchor deployment</div>
+     </div>
+     <div class="case-metrics">
+       <div class="case-metric"><b>38K</b><span>identified decision-maker profiles unified across titles & events</span></div>
+       <div class="case-metric"><b>5.2×</b><span>direct-sold CPM uplift on packaged audience deals</span></div>
+       <div class="case-metric"><b>3</b><span>new recurring revenue lines: intelligence, membership, comparison</span></div>
+     </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section" id="insights">
+  <div class="wrap">
+   <div class="sec-head reveal">
+     <div><div class="kicker">Insights</div><h2>Reading the GCC media economy.</h2></div>
+     <p>Analysis, playbooks and briefings from the team building the region's monetization infrastructure.</p>
+   </div>
+   <div class="ins-grid">
+     ${INSIGHTS.map(i=>`
+     <div class="ins-card reveal" onclick="openModal()">
+       <div class="tag">${i.tag}</div>
+       <h3>${i.h}</h3>
+       <div class="meta">${i.meta}</div>
+     </div>`).join('')}
+   </div>
+  </div>
+ </section>
+
+ <section class="cta-band">
+  <div class="hero-glow"></div>
+  <div class="wrap" style="position:relative">
+   <div class="reveal"><h2>See what your audience is <span class="em">worth.</span></h2>
+   <p>A 30-minute walkthrough: your titles, your data, the revenue lines the platform unlocks — and the sequence to get there.</p>
+   <button class="btn btn-amber" onclick="openModal()">Book a Demo <span class="arr">→</span></button></div>
+  </div>
+ </section>`;
+ mount();
+}
+
+function renderModule(id){
+ const m = MODULES.find(x=>x.id===id) || MODULES[0];
+ const rel = MODULES.filter(x=>x.id!==m.id).slice(0,3);
+ app.innerHTML = `
+ <section class="sub-hero">
+  <div class="grid-bg"></div><div class="hero-glow"></div>
+  <div class="wrap" style="position:relative">
+   <div class="crumb reveal"><a onclick="go('home')">Home</a> / Platform / ${m.name}</div>
+   <div class="kicker reveal">Module ${m.num}</div>
+   <h1 class="reveal">${m.pos}</h1>
+   <p class="lede reveal">${m.short}</p>
+   <div class="who reveal">${m.who.map(w=>`<span>FOR ${w.toUpperCase()}</span>`).join('')}</div>
+   <div class="hero-ctas reveal">
+     <button class="btn btn-amber" onclick="openModal()">Book a Demo <span class="arr">→</span></button>
+     <button class="btn btn-ghost" onclick="openModal()">Download module overview</button>
+   </div>
+   <div class="flow flow-banner reveal">
+     <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Capabilities</div><h2>What's inside ${m.name}.</h2></div></div>
+   <div class="cap-grid">
+     ${m.caps.map(c=>`<div class="cap reveal"><div class="mono">${c.k}</div><h3>${c.h}</h3><p>${c.d}</p></div>`).join('')}
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">How it flows</div><h2>From signal to revenue.</h2></div></div>
+   <div class="diagram reveal">
+     ${m.flow.map((f,i)=>`<div class="dg-node ${i===2?'hot':''}">${f.toUpperCase()}</div>${i<m.flow.length-1?'<div class="dg-arrow">→</div>':''}`).join('')}
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="proof-line reveal"><p>"${m.proof}"</p><span>${m.proofSrc}</span></div>
+  </div>
+ </section>
+
+ <section class="section tight" style="padding-bottom:120px">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Related modules</div><h2>The chassis compounds.</h2></div></div>
+   <div class="rel-grid">${rel.map(modCard).join('')}</div>
+  </div>
+ </section>`;
+ mount();
+}
+
+function renderSolution(id){
+ const s = SOLUTIONS.find(x=>x.id===id) || SOLUTIONS[0];
+ const mods = s.mods.map(mid=>MODULES.find(m=>m.id===mid));
+ app.innerHTML = `
+ <section class="sub-hero">
+  <div class="grid-bg"></div><div class="hero-glow"></div>
+  <div class="wrap" style="position:relative">
+   <div class="crumb reveal"><a onclick="go('home')">Home</a> / Solutions / ${s.name}</div>
+   <div class="kicker reveal">Solution ${s.num}</div>
+   <h1 class="reveal">${s.name}</h1>
+   <p class="lede reveal"><b style="color:var(--text)">The problem:</b> ${s.pain}<br><br>${s.lede}</p>
+   <div class="hero-ctas reveal">
+     <button class="btn btn-amber" onclick="openModal()">Book a Demo <span class="arr">→</span></button>
+   </div>
+   <div class="flow flow-banner reveal">
+     <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Outcomes</div><h2>What changes.</h2></div></div>
+   <div class="outcomes">
+     ${s.outcomes.map(o=>`<div class="outcome reveal"><b>${o.b}</b><p>${o.p}</p></div>`).join('')}
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Modules applied</div><h2>The stack behind it.</h2></div></div>
+   <div class="mod-chips reveal">
+     ${mods.map(m=>`<div class="mod-chip" onclick="go('module','${m.id}')">${m.num} · ${m.name} →</div>`).join('')}
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight" style="padding-bottom:120px">
+  <div class="wrap">
+   <div class="proof-line reveal"><p>"${s.story}"</p><span>AD-CORE DEPLOYMENT NOTES</span></div>
+  </div>
+ </section>`;
+ mount();
+}
+
+function renderOverview(){
+ app.innerHTML = `
+ <section class="sub-hero">
+  <div class="grid-bg"></div><div class="hero-glow"></div>
+  <div class="wrap" style="position:relative">
+   <div class="crumb reveal"><a onclick="go('home')">Home</a> / Platform / Overview</div>
+   <div class="kicker reveal">Platform overview</div>
+   <h1 class="reveal">One platform. <span class="em" style="color:var(--amber)">Two ways to run it.</span></h1>
+   <p class="lede reveal">Media owners struggle to realise value from a pile of point solutions — siloed data, slow experience changes, lost opportunity. Ad-Core is one integrated chassis of seven modules, available as a SaaS license your team operates, or as a partnership where we build and operate with you.</p>
+   <div class="hero-ctas reveal">
+     <button class="btn btn-amber" onclick="openModal()">Book a Demo <span class="arr">→</span></button>
+     <button class="btn btn-ghost" onclick="openModal()">Download the architecture paper</button>
+   </div>
+   <div class="flow flow-banner reveal">
+     <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Internal integration</div><h2>The loop is the product.</h2></div>
+   <p>Every module reads from, and writes back to, the same identity spine — so day-to-day use never burdens IT.</p></div>
+   <div class="diagram reveal">
+     <div class="dg-node hot">IDENTIFY<br><small style="color:var(--text-dim)">Identity Stack</small></div><div class="dg-arrow">→</div>
+     <div class="dg-node">PACKAGE<br><small style="color:var(--text-dim)">Monetization Suite</small></div><div class="dg-arrow">→</div>
+     <div class="dg-node">CONVERT<br><small style="color:var(--text-dim)">Engagement OS</small></div><div class="dg-arrow">→</div>
+     <div class="dg-node">AMPLIFY<br><small style="color:var(--text-dim)">Audience Amplifier</small></div><div class="dg-arrow">→</div>
+     <div class="dg-node">MEASURE<br><small style="color:var(--text-dim)">AI & Analytics</small></div><div class="dg-arrow">↺</div>
+   </div>
+   <div class="proof-line reveal" style="margin-top:24px;max-width:none">
+     <p>Build a segment of banking-content readers in the Identity Stack, package them as a premium audience deal in the Monetization Suite, acquire their lookalikes on social through the Amplifier, convert them to members in Engagement OS — and report on the whole journey in Analytics. Then run it in reverse.</p>
+     <span>EVERY SEGMENT IS EXPORTABLE · EVERY MODULE SHARES ONE DATA MODEL</span>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Deployment models</div><h2>SaaS license, or operated partnership.</h2></div></div>
+   <div class="cap-grid">
+     <div class="cap reveal"><div class="mono">MODEL A · SAAS</div><h3>Platform license</h3><p>License modules individually or as a stack. Annual license plus usage, with implementation, managed connectors, training and certification, regional hosting and PDPL-ready compliance included. Your team operates; our Academy keeps them certified.</p></div>
+     <div class="cap reveal"><div class="mono">MODEL B · PARTNERSHIP</div><h3>Build · Operate · Own</h3><p>We deploy the chassis, launch the revenue lines and operate them under long-term agreements — retainer plus revenue share on monetisation, JV equity on platform ventures, and a build–operate–transfer path when you're ready to insource.</p></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Data portability</div><h2>Data in, data out. No lock-in.</h2></div></div>
+   <div class="cap-grid">
+     <div class="cap reveal"><div class="mono">DATA IN</div><h3>Ingestion points</h3><p>Behavioural events (JS tags + server-side APIs, unsampled, real time) · CRM and subscriber-file imports, print included · Event registration and delegate data · External segments · Contextual data (Arabic + English).</p></div>
+     <div class="cap reveal"><div class="mono">DATA OUT</div><h3>Export & sync</h3><p>Real-time segment exports and webhooks · Clean-room matches with banks, telcos and retailers · Third-party identifier sync (ID5, UID2.0) · Warehouse and BI exports · Full log access.</p></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">Architecture</div><h2>Real-time engine, regional residency.</h2></div></div>
+   <div class="cap-grid">
+     <div class="cap reveal"><div class="mono">SPEED</div><h3>Event to action in milliseconds</h3><p>A real-time in-memory engine for segmentation and journey decisions, synchronised with a warehouse layer for analytics and data products — one platform, both speeds.</p></div>
+     <div class="cap reveal"><div class="mono">RESIDENCY</div><h3>GCC data residency & PDPL</h3><p>Regional hosting with data-residency options per market, consent built into the spine, and Arabic-first data models and taxonomies global platforms don't carry.</p></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="section tight" style="padding-bottom:120px">
+  <div class="wrap">
+   <div class="sec-head reveal"><div><div class="kicker">The modules</div><h2>Explore the chassis.</h2></div></div>
+   <div class="mod-grid">${MODULES.map(modCard).join('')}</div>
+  </div>
+ </section>`;
+ mount();
+}
+
+function renderServices(){
+ app.innerHTML = `
+ <section class="sub-hero">
+  <div class="grid-bg"></div><div class="hero-glow"></div>
+  <div class="wrap" style="position:relative">
+   <div class="crumb reveal"><a onclick="go('home')">Home</a> / Services</div>
+   <div class="kicker reveal">The STEM approach</div>
+   <h1 class="reveal">We don't hand over a strategy deck. We run the business <span class="em" style="color:var(--amber)">with you.</span></h1>
+   <p class="lede reveal">Four stages, one journey: from monetization diagnostic to jointly-owned platform ventures. Prefer to run it yourself? License the platform as SaaS — and our platform services team gets you live, integrated, trained and certified.</p>
+  </div>
+ </section>
+
+ <section class="section tight" style="padding-bottom:120px">
+  <div class="wrap">
+   <div class="stem">
+     <div class="stem-card reveal">
+       <div class="big">S</div><h3>Diagnose</h3>
+       <p>Monetization audit, audience and data assessment, opportunity sizing across the three revenue layers.</p>
+       <ul><li>Commercial roadmap</li><li>Platform-readiness score</li><li>Investment & ROI framework</li></ul>
+       <div class="model">MODEL · FIXED-FEE SPRINT</div>
+     </div>
+     <div class="stem-card reveal">
+       <div class="big">T</div><h3>Build</h3>
+       <p>Chassis deployment and configuration: identity, intelligence, marketplace or engagement modules on your brand.</p>
+       <ul><li>2–6 month launches</li><li>Provider & API integrations</li><li>Bilingual UX & data models</li></ul>
+       <div class="model">MODEL · PROJECT FEE</div>
+     </div>
+     <div class="stem-card reveal">
+       <div class="big">E</div><h3>Operate</h3>
+       <p>Managed monetization desk, data operations and growth marketing under long-term operating agreements.</p>
+       <ul><li>Audience packaging & PMP deals</li><li>Pipeline & taxonomy upkeep</li><li>Build–operate–transfer option</li></ul>
+       <div class="model">MODEL · RETAINER + REV SHARE</div>
+     </div>
+     <div class="stem-card reveal">
+       <div class="big">M</div><h3>Commercialize</h3>
+       <p>Sales-as-a-service, pricing architecture and joint ventures where we co-own the platform upside.</p>
+       <ul><li>Subscription & sponsor sales</li><li>GTM launch programmes</li><li>JV equity · 40–49%</li></ul>
+       <div class="model">MODEL · REV / EQUITY SHARE</div>
+     </div>
+   </div>
+   <div class="how-foot reveal" style="margin-top:44px">
+     <p style="color:var(--text-dim)">Sequencing follows the three-layer logic: <span style="color:var(--text)">Layer 1 funds the foundations → foundations enable Layer 2 → Layer 2 proves the model and funds Layer 3.</span></p>
+     <button class="btn btn-amber" onclick="openModal()">Start with a diagnostic <span class="arr">→</span></button>
+   </div>
+
+   <div class="sec-head reveal" style="margin-top:96px"><div><div class="kicker">Platform services</div><h2>For SaaS clients: live, integrated, certified.</h2></div>
+   <p>Everything a platform license needs around it — drawn from delivering across publishing, events and government environments.</p></div>
+   <div class="stem">
+     <div class="stem-card reveal">
+       <div class="big mono" style="font-size:1.6rem">01</div><h3>Implementation</h3>
+       <p>Structured onboarding: detailed discovery, expert project management, and an implementation approach built to underpin years of operation — not just go-live.</p>
+       <ul><li>Discovery → goals → rollout plan</li><li>Joint foundation with your IT team</li><li>Bilingual configuration from day one</li></ul>
+       <div class="model">FIXED-SCOPE ONBOARDING</div>
+     </div>
+     <div class="stem-card reveal">
+       <div class="big mono" style="font-size:1.6rem">02</div><h3>Technical Consulting & Managed Connectors</h3>
+       <p>Developers and consultants for audits, templates and integrations — plus managed middleware that moves data between Ad-Core and your systems in real time or on schedule, with no engineering burden on you.</p>
+       <ul><li>Technical audits & templates</li><li>Managed connector library</li><li>Custom builds on the platform</li></ul>
+       <div class="model">PROJECT OR RETAINER</div>
+     </div>
+     <div class="stem-card reveal">
+       <div class="big mono" style="font-size:1.6rem">03</div><h3>Ad-Core Academy</h3>
+       <p>Self-serve training centre with role-based courses, graded exercises and certification — plus tailored team training, in person or online, in Arabic and English.</p>
+       <ul><li>Certification tracks per module</li><li>New courses added monthly</li><li>Supports national talent programmes</li></ul>
+       <div class="model">INCLUDED + PREMIUM TIERS</div>
+     </div>
+     <div class="stem-card reveal">
+       <div class="big mono" style="font-size:1.6rem">04</div><h3>Campaign Services</h3>
+       <p>Data-driven paid social buying through the Audience Amplifier — acquiring lookalikes of your best segments and converting social audiences into registered, addressable users.</p>
+       <ul><li>Managed media buying</li><li>Branded-content amplification</li><li>ROAS measured to revenue events</li></ul>
+       <div class="model">MEDIA BUDGET + MGMT FEE</div>
+     </div>
+   </div>
+   <div class="how-foot reveal" style="margin-top:44px">
+     <p style="color:var(--text-dim)">Every license includes <span style="color:var(--text)">Ad-Core Benchmarks</span> — regional engagement, conversion and yield benchmarks so performance is always in context.</p>
+     <button class="btn btn-ghost" onclick="go('overview')">See the platform overview <span class="arr">→</span></button>
+   </div>
+  </div>
+ </section>`;
+ mount();
+}
+
+function renderCustomers(){
+ app.innerHTML = `
+ <section class="sub-hero">
+  <div class="grid-bg"></div><div class="hero-glow"></div>
+  <div class="wrap" style="position:relative">
+   <div class="crumb reveal"><a onclick="go('home')">Home</a> / Customers</div>
+   <div class="kicker reveal">Deployments</div>
+   <h1 class="reveal">Built on trust. <span class="em" style="color:var(--amber)">Measured in revenue.</span></h1>
+   <p class="lede reveal">Anchor deployments and pilots across publishing, events, government programmes and financial verticals. Detailed case studies available under NDA.</p>
+  </div>
+ </section>
+ <section class="section tight" style="padding-bottom:120px">
+  <div class="wrap">
+   <div class="cust-grid">
+     ${CUSTOMERS.map(c=>`
+     <div class="cust-card reveal">
+       <div class="tag">${c.tag}</div>
+       <h3>${c.h}</h3>
+       <p>${c.p}</p>
+       <div class="cust-stats">${c.stats.map(st=>`<div><b>${st.b}</b><span>${st.s}</span></div>`).join('')}</div>
+     </div>`).join('')}
+   </div>
+   <div class="how-foot reveal" style="margin-top:44px">
+     <p style="color:var(--text-dim)">Numbers shown are prototype placeholders pending live case-study approval.</p>
+     <button class="btn btn-amber" onclick="openModal()">Request full case studies <span class="arr">→</span></button>
+   </div>
+  </div>
+ </section>`;
+ mount();
+}
+
+/* ============ ROUTER & CHROME ============ */
+function go(page, arg){
+  document.getElementById('navLinks').classList.remove('open');
+  window.scrollTo({top:0,behavior:'instant'});
+  if(page==='home'){renderHome(); if(arg){setTimeout(()=>{const el=document.getElementById(arg); if(el) el.scrollIntoView({behavior:'smooth'})},80)}}
+  else if(page==='overview') renderOverview();
+  else if(page==='module') renderModule(arg);
+  else if(page==='solution') renderSolution(arg);
+  else if(page==='services') renderServices();
+  else if(page==='customers') renderCustomers();
+}
+function toggleDrop(a){ if(window.innerWidth<=1020){ a.parentElement.classList.toggle('open') } }
+function openModal(){document.getElementById('modalBg').classList.add('open');document.getElementById('modal').classList.remove('done')}
+function closeModal(){document.getElementById('modalBg').classList.remove('open')}
+
+/* dropdown + footer population */
+document.getElementById('dd-platform').innerHTML =
+  `<a onclick="go('overview')"><b>Platform Overview</b><small>One platform, two ways to run it — SaaS or partnership.</small></a>` +
+  MODULES.map(m=>
+  `<a onclick="go('module','${m.id}')"><b>${m.num} · ${m.name}</b><small>${m.pos}</small></a>`).join('');
+document.getElementById('dd-solutions').innerHTML = SOLUTIONS.map(s=>
+  `<a onclick="go('solution','${s.id}')"><b>${s.name}</b><small>${s.pain.slice(0,64)}…</small></a>`).join('');
+document.getElementById('foot-platform').innerHTML =
+  `<a onclick="go('overview')">Platform Overview</a>` +
+  MODULES.map(m=>`<a onclick="go('module','${m.id}')">${m.name}</a>`).join('');
+document.getElementById('foot-solutions').innerHTML = SOLUTIONS.map(s=>`<a onclick="go('solution','${s.id}')">${s.name}</a>`).join('');
+
+/* ============ INTERACTIVE ID GRAPH (draggable, flowing) ============ */
+function initGraph(){
+  const panel = document.getElementById('idg');
+  if(!panel || panel.dataset.live) return;
+  panel.dataset.live = "1";
+  const svg = document.getElementById('idgSvg');
+  const W = () => panel.clientWidth, H = () => panel.clientHeight;
+  const NODES = [
+    {id:'portals',  label:'PORTALS',      x:.10, y:.13, type:'in'},
+    {id:'events',   label:'EVENTS',       x:.06, y:.38, type:'in'},
+    {id:'news',     label:'NEWSLETTERS',  x:.08, y:.63, type:'in'},
+    {id:'print',    label:'PRINT SUBS',   x:.13, y:.87, type:'in'},
+    {id:'hub',      label:'ID GRAPH',     x:.44, y:.48, type:'hub'},
+    {id:'pmp',      label:'PMP DEALS',    x:.74, y:.10, type:'out'},
+    {id:'members',  label:'MEMBERSHIPS',  x:.80, y:.37, type:'out'},
+    {id:'markets',  label:'MARKETPLACES', x:.76, y:.64, type:'out'},
+    {id:'clean',    label:'CLEAN ROOMS',  x:.68, y:.89, type:'out'}
+  ];
+  const EDGES = [
+    ['portals','hub'],['events','hub'],['news','hub'],['print','hub'],
+    ['hub','pmp'],['hub','members'],['hub','markets'],['hub','clean']
+  ];
+  // build node elements
+  NODES.forEach(n=>{
+    const el = document.createElement('div');
+    el.className = 'g-node' + (n.type==='hub' ? ' hub' : n.type==='out' ? ' out' : '');
+    el.innerHTML = '<span class="dot"></span>' + n.label;
+    panel.appendChild(el);
+    n.el = el; n.px = n.x*W(); n.py = n.y*H();
+    n.phase = Math.random()*Math.PI*2; n.amp = n.type==='hub' ? 3 : 6; n.drag = false;
+    // drag
+    el.addEventListener('pointerdown', ev=>{
+      ev.preventDefault(); n.drag = true; el.setPointerCapture(ev.pointerId);
+      n.ox = ev.clientX - n.px; n.oy = ev.clientY - n.py;
+    });
+    el.addEventListener('pointermove', ev=>{
+      if(!n.drag) return;
+      n.px = Math.min(Math.max(ev.clientX - n.ox, 6), W()-el.offsetWidth-6);
+      n.py = Math.min(Math.max(ev.clientY - n.oy, 6), H()-el.offsetHeight-6);
+    });
+    const up = ()=>{ n.drag = false; };
+    el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  });
+  // build edges + flowing particles (2 per edge, offset)
+  const NS = 'http://www.w3.org/2000/svg';
+  const edges = EDGES.map(([a,b],i)=>{
+    const path = document.createElementNS(NS,'path'); path.setAttribute('class','edge'); svg.appendChild(path);
+    const parts = [0,1].map(k=>{
+      const c = document.createElementNS(NS,'circle');
+      c.setAttribute('r', 2.6);
+      c.setAttribute('fill', b==='hub' ? '#FF6A5E' : '#7E9BFF');
+      svg.appendChild(c);
+      return {c, t: (i*0.13 + k*0.5) % 1, speed: 0.0022 + (i%4)*0.0005};
+    });
+    return {a: NODES.find(n=>n.id===a), b: NODES.find(n=>n.id===b), path, parts};
+  });
+  const bez=(p0,c1,c2,p1,t)=>{const u=1-t;return u*u*u*p0 + 3*u*u*t*c1 + 3*u*t*t*c2 + t*t*t*p1};
+  function frame(time){
+    if(!document.body.contains(panel)) return;        // stop loop after navigation
+    NODES.forEach(n=>{
+      const bobY = n.drag ? 0 : Math.sin(time*0.0011 + n.phase)*n.amp;
+      const bobX = n.drag ? 0 : Math.cos(time*0.0008 + n.phase)*3;
+      n.cx = n.px + n.el.offsetWidth/2 + bobX;
+      n.cy = n.py + n.el.offsetHeight/2 + bobY;
+      n.el.style.transform = 'translate(' + (n.px+bobX) + 'px,' + (n.py+bobY) + 'px)';
+    });
+    edges.forEach(e=>{
+      const x1=e.a.cx, y1=e.a.cy, x2=e.b.cx, y2=e.b.cy, mx=(x1+x2)/2;
+      e.path.setAttribute('d','M'+x1+' '+y1+' C '+mx+' '+y1+', '+mx+' '+y2+', '+x2+' '+y2);
+      e.parts.forEach(p=>{
+        p.t = (p.t + p.speed) % 1;
+        p.c.setAttribute('cx', bez(x1,mx,mx,x2,p.t));
+        p.c.setAttribute('cy', bez(y1,y1,y2,y2,p.t));
+        p.c.setAttribute('opacity', 0.35 + 0.65*Math.sin(p.t*Math.PI));
+      });
+    });
+    requestAnimationFrame(frame);
+  }
+  // nodes are positioned via transform from 0,0
+  NODES.forEach(n=>{ n.el.style.left='0'; n.el.style.top='0'; });
+  requestAnimationFrame(frame);
+}
+
+/* ============ MARQUEE — moveable boxes ============ */
+const MQ_ITEMS = ['ID GRAPH','JOURNEY COMPOSER','PMP CURATION','TENDER INTELLIGENCE','COMPARISON ENGINE','MEMBERSHIP OS','PRINT + DIGITAL','CLEAN ROOMS','ARABIC AI OPS','RETAIL MEDIA','EVENTS STACK','GCC BENCHMARKS','LEAD ROUTING','AUDIENCE PACKAGES','NEWSLETTER CRM','CLOSED-LOOP ATTRIBUTION'];
+function initMarquee(){
+  const mq = document.getElementById('mq');
+  if(!mq || mq.dataset.live) return;
+  mq.dataset.live = "1";
+  const track = document.getElementById('mqTrack');
+  track.innerHTML = MQ_ITEMS.concat(MQ_ITEMS).map(t=>'<div class="mq-box"><span class="dot"></span>'+t+'</div>').join('');
+  let pos = 0, vel = 0.55, paused = false, dragging = false, lastX = 0;
+  mq.addEventListener('pointerenter', ()=>paused=true);
+  mq.addEventListener('pointerleave', ()=>{paused=false;dragging=false});
+  mq.addEventListener('pointerdown', e=>{dragging=true;lastX=e.clientX;mq.setPointerCapture(e.pointerId)});
+  mq.addEventListener('pointermove', e=>{ if(dragging){ pos -= (e.clientX - lastX); lastX = e.clientX; } });
+  const stop = ()=>{dragging=false};
+  mq.addEventListener('pointerup', stop); mq.addEventListener('pointercancel', stop);
+  function frame(){
+    if(!document.body.contains(mq)) return;
+    if(!paused && !dragging) pos += vel;
+    const half = track.scrollWidth/2;
+    if(half>0){ pos = ((pos % half) + half) % half; }
+    track.style.transform = 'translateX(' + (-pos) + 'px)';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* scroll reveal */
+let obs;
+function mount(){
+  if(obs) obs.disconnect();
+  obs = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}}),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(Math.min(i%6,4)*60)+'ms';obs.observe(el)});
+  initGraph();
+  initMarquee();
+}
+renderHome();
+</script>
+
+
+</body></html>
