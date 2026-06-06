@@ -190,7 +190,15 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
 .hero-meta .m b i{font-style:normal;color:var(--amber)}
 .hero-meta .m span{font-size:.74rem;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}
 .hero-art{position:absolute;right:32px;top:124px;width:500px}
-@media(max-width:1100px){.hero-art{display:none}}
+.hero-video{
+  position:relative;width:100%;height:440px;border-radius:26px;overflow:hidden;
+  background:linear-gradient(160deg,#15121F,#101319 55%,#171019);border:1px solid var(--line);
+  box-shadow:0 40px 90px rgba(0,0,0,.45);
+}
+.hero-video video{width:100%;height:100%;display:block;object-fit:cover}
+.hero-video::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 115%,rgba(10,11,13,.35),transparent 60%)}
+@media(max-width:1100px){.hero-art{position:relative;right:auto;top:auto;width:100%;margin-top:46px}.hero-video{height:340px}}
+@media(max-width:720px){.hero-video{height:240px;border-radius:20px}}
 
 /* ---------- PROBLEM STRIP ---------- */
 .problem{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--band)}
@@ -766,10 +774,10 @@ function renderHome(){
      <div class="m"><b>7</b><span>CHASSIS MODULES, ONE STACK</span></div>
    </div>
    <div class="hero-art">
-     <div class="id-graph" id="idg">
-       <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-       <svg id="idgSvg"></svg>
-       <div class="g-hint">DRAG THE NODES</div>
+     <div class="hero-video reveal" aria-label="Ad-Core animated platform visual">
+       <video autoplay muted loop playsinline preload="metadata" poster="">
+         <source src="assets/videos/circle_animation.mp4" type="video/mp4">
+       </video>
      </div>
    </div>
   </div>
