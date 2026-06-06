@@ -236,55 +236,75 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
   position:relative;
   width:min(100%,clamp(300px,30vw,470px));
   aspect-ratio:1/1;
-  overflow:visible;
+  overflow:hidden;
   background:transparent !important;
   border:0 !important;
-  border-radius:0;
+  border-radius:50%;
   box-shadow:none !important;
   outline:0 !important;
   transform:translateX(clamp(-8px,-.8vw,-3px));
   isolation:isolate;
+  /* True circular feather: keeps the animation visible in the centre and
+     dissolves only the outer perimeter into the graphite page background. */
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,
+    #000 0 68%,
+    rgba(0,0,0,.96) 76%,
+    rgba(0,0,0,.68) 86%,
+    rgba(0,0,0,.28) 94%,
+    transparent 100%);
+  mask-image:radial-gradient(circle at 50% 50%,
+    #000 0 68%,
+    rgba(0,0,0,.96) 76%,
+    rgba(0,0,0,.68) 86%,
+    rgba(0,0,0,.28) 94%,
+    transparent 100%);
 }
 .hero-video video{
   position:absolute;
   left:50%;
   top:50%;
-  width:112%;
-  height:112%;
+  width:118%;
+  height:118%;
   display:block;
   object-fit:cover;
   background:transparent !important;
   opacity:1;
-  /* Lighten hides the MP4's dark square background against the graphite page,
-     while preserving the bright animation lines. */
+  border:0 !important;
+  border-radius:50%;
+  box-shadow:none !important;
+  outline:0 !important;
+  /* Black in the MP4 becomes visually transparent against the graphite page;
+     bright animation strokes remain visible. */
   mix-blend-mode:lighten;
-  transform:translate(-50%,-50%) scale(1.015);
-  filter:saturate(1.12) contrast(1.08) brightness(1.02);
-  -webkit-mask-image:radial-gradient(ellipse at 50% 50%,#000 0 88%,rgba(0,0,0,.92) 93%,rgba(0,0,0,.45) 97%,transparent 100%);
-  mask-image:radial-gradient(ellipse at 50% 50%,#000 0 88%,rgba(0,0,0,.92) 93%,rgba(0,0,0,.45) 97%,transparent 100%);
+  transform:translate(-50%,-50%) scale(1.02);
+  filter:saturate(1.14) contrast(1.08) brightness(1.04);
 }
 .hero-video::before{
   content:"";
   position:absolute;
-  inset:8%;
-  background:radial-gradient(ellipse at center,rgba(244,69,61,.10),rgba(91,75,255,.07) 48%,transparent 76%);
-  filter:blur(60px);
-  opacity:.55;
+  inset:4%;
+  border-radius:50%;
+  background:radial-gradient(circle at center,rgba(244,69,61,.10),rgba(91,75,255,.07) 45%,transparent 74%);
+  filter:blur(64px);
+  opacity:.58;
   pointer-events:none;
   z-index:-1;
 }
 .hero-video::after{
   content:"";
   position:absolute;
-  inset:-6%;
+  inset:-1%;
+  border-radius:50%;
   pointer-events:none;
   z-index:2;
-  /* Very soft page-colour edge wash only at the outer perimeter.
-     This removes residual compression edges without covering the animation. */
-  background:
-    linear-gradient(to right,var(--ink) 0%,rgba(22,23,27,.78) 4%,rgba(22,23,27,0) 15%,rgba(22,23,27,0) 85%,rgba(22,23,27,.78) 96%,var(--ink) 100%),
-    linear-gradient(to bottom,var(--ink) 0%,rgba(22,23,27,.78) 4%,rgba(22,23,27,0) 15%,rgba(22,23,27,0) 85%,rgba(22,23,27,.78) 96%,var(--ink) 100%),
-    radial-gradient(ellipse at 50% 50%,transparent 0 74%,rgba(22,23,27,.10) 86%,rgba(22,23,27,.48) 96%,var(--ink) 100%);
+  /* Circular page-colour wash, not rectangular. This removes the remaining
+     square edge from the MP4 without drawing hard vertical/horizontal borders. */
+  background:radial-gradient(circle at 50% 50%,
+    transparent 0 62%,
+    rgba(22,23,27,.08) 73%,
+    rgba(22,23,27,.34) 86%,
+    rgba(22,23,27,.78) 95%,
+    var(--ink) 100%);
 }
 @media(max-width:1100px){
   .hero{min-height:clamp(560px,70vh,700px)}
