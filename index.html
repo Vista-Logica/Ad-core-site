@@ -177,10 +177,26 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
 .light h1,.light h2,.light h3{color:var(--text-ink)}
 
 /* ---------- HERO ---------- */
-.hero{position:relative;padding:110px 0 96px;overflow:hidden}
+.hero{
+  position:relative;
+  padding:96px 0 88px;
+  overflow:hidden;
+  min-height:720px;
+  display:flex;
+  align-items:center;
+}
 .hero-glow{position:absolute;width:900px;height:900px;border-radius:50%;top:-460px;right:-280px;
   background:radial-gradient(circle,rgba(244,69,61,.12),transparent 60%);pointer-events:none}
 .hero-glow.b{top:auto;bottom:-580px;left:-360px;right:auto;background:radial-gradient(circle,rgba(91,75,255,.10),transparent 62%)}
+.hero .wrap{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(0,0.92fr) minmax(520px,1.08fr);
+  align-items:center;
+  gap:18px;
+}
+.hero-copy{position:relative;z-index:3;max-width:680px}
 .hero h1{font-size:clamp(2.7rem,6vw,4.7rem);max-width:15ch;margin:26px 0 24px}
 .hero p.lede{font-size:1.16rem;color:var(--text-dim);max-width:54ch;margin-bottom:38px}
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
@@ -189,17 +205,63 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
 .hero-meta .m b{font-family:'Schibsted Grotesk',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-.02em;color:var(--text)}
 .hero-meta .m b i{font-style:normal;color:var(--amber)}
 .hero-meta .m span{font-size:.74rem;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}
-.hero-art{position:absolute;right:32px;top:124px;width:500px}
-.hero-video{
-  position:relative;width:100%;height:440px;border-radius:26px;overflow:hidden;
-  background:linear-gradient(160deg,#15121F,#101319 55%,#171019);border:1px solid var(--line);
-  box-shadow:0 40px 90px rgba(0,0,0,.45);
+.hero-art{
+  position:relative;
+  z-index:1;
+  width:clamp(560px,56vw,820px);
+  height:clamp(520px,56vw,760px);
+  margin-left:clamp(-42px,-4vw,-16px);
+  pointer-events:none;
+  overflow:visible;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
 }
-.hero-video video{width:100%;height:100%;display:block;object-fit:cover}
-.hero-video::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 115%,rgba(10,11,13,.35),transparent 60%)}
-@media(max-width:1100px){.hero-art{position:relative;right:auto;top:auto;width:100%;margin-top:46px}.hero-video{height:340px}}
-@media(max-width:720px){.hero-video{height:240px;border-radius:20px}}
-
+.hero-video{
+  position:absolute;
+  inset:-7% -8% -7% -6%;
+  overflow:visible;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  outline:0 !important;
+}
+.hero-video video{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  background:transparent !important;
+  opacity:.98;
+  mix-blend-mode:screen;
+  filter:drop-shadow(0 56px 110px rgba(0,0,0,.48)) saturate(1.18) contrast(1.08);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0 50%,rgba(0,0,0,.92) 60%,rgba(0,0,0,.48) 76%,transparent 92%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 0 50%,rgba(0,0,0,.92) 60%,rgba(0,0,0,.48) 76%,transparent 92%);
+}
+.hero-video::before{
+  content:"";
+  position:absolute;
+  inset:12% 10%;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(244,69,61,.18),rgba(91,75,255,.14) 42%,transparent 72%);
+  filter:blur(52px);
+  opacity:.8;
+  pointer-events:none;
+}
+.hero-video::after{content:none !important}
+@media(max-width:1100px){
+  .hero{padding:82px 0 70px;min-height:auto}
+  .hero .wrap{grid-template-columns:1fr;gap:22px}
+  .hero-copy{max-width:760px}
+  .hero-art{width:min(112%,760px);height:500px;margin:6px auto -52px;justify-self:center}
+  .hero-video{inset:-8% -10%}
+}
+@media(max-width:720px){
+  .hero{padding-top:74px}
+  .hero-art{width:126%;height:360px;margin:0 0 -36px -13%}
+  .hero-video video{opacity:.94}
+}
 /* ---------- PROBLEM STRIP ---------- */
 .problem{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--band)}
 .problem-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:0}
@@ -760,22 +822,24 @@ function renderHome(){
  <section class="hero">
   <div class="grid-bg"></div>
   <div class="hero-glow"></div><div class="hero-glow b"></div>
-  <div class="wrap" style="position:relative">
-   <div class="kicker reveal">Monetization infrastructure · GCC</div>
-   <h1 class="reveal">Turn audience trust into <span class="em">platform revenue.</span></h1>
-   <p class="lede reveal">Ad-Core is the monetization infrastructure and venture-building partner for media owners in the GCC — identity, intelligence and marketplaces, built on your brand and operated with you.</p>
-   <div class="hero-ctas reveal">
-     <button class="btn btn-amber" onclick="openModal()">Book a Demo <span class="arr">→</span></button>
-     <button class="btn btn-ghost" onclick="go('overview')">Explore the Platform</button>
+  <div class="wrap">
+   <div class="hero-copy">
+    <div class="kicker reveal">Monetization infrastructure · GCC</div>
+    <h1 class="reveal">Turn audience trust into <span class="em">platform revenue.</span></h1>
+    <p class="lede reveal">Ad-Core is the monetization infrastructure and venture-building partner for media owners in the GCC — identity, intelligence and marketplaces, built on your brand and operated with you.</p>
+    <div class="hero-ctas reveal">
+      <button class="btn btn-amber" onclick="openModal()">Book a Demo <span class="arr">→</span></button>
+      <button class="btn btn-ghost" onclick="go('overview')">Explore the Platform</button>
+    </div>
+    <div class="hero-meta reveal">
+      <div class="m"><b>4–8<i>×</i></b><span>CPM ON IDENTITY-LINKED INVENTORY</span></div>
+      <div class="m"><b>9–15<i> mo</i></b><span>MANDATE → PLATFORM REVENUE</span></div>
+      <div class="m"><b>7</b><span>CHASSIS MODULES, ONE STACK</span></div>
+    </div>
    </div>
-   <div class="hero-meta reveal">
-     <div class="m"><b>4–8<i>×</i></b><span>CPM ON IDENTITY-LINKED INVENTORY</span></div>
-     <div class="m"><b>9–15<i> mo</i></b><span>MANDATE → PLATFORM REVENUE</span></div>
-     <div class="m"><b>7</b><span>CHASSIS MODULES, ONE STACK</span></div>
-   </div>
-   <div class="hero-art">
-     <div class="hero-video reveal" aria-label="Ad-Core animated platform visual">
-       <video autoplay muted loop playsinline preload="metadata" poster="">
+   <div class="hero-art" aria-label="Ad-Core animated platform visual">
+     <div class="hero-video reveal">
+       <video autoplay muted loop playsinline preload="metadata">
          <source src="assets/videos/circle_animation.mp4" type="video/mp4">
        </video>
      </div>
