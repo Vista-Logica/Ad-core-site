@@ -192,11 +192,11 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
   position:relative;
   z-index:1;
   display:grid;
-  grid-template-columns:minmax(0,3fr) minmax(260px,2fr); /* 60 / 40 */
+  grid-template-columns:minmax(0,3fr) minmax(220px,2fr); /* 60 / 40 */
   align-items:center;
-  gap:clamp(22px,3.4vw,50px);
+  gap:clamp(22px,4vw,64px);
 }
-.hero-copy{position:relative;z-index:3;max-width:none;min-width:0}
+.hero-copy{position:relative;z-index:3;min-width:0;max-width:none}
 .hero h1{font-size:clamp(2.45rem,5vw,4.55rem);max-width:15ch;margin:26px 0 24px}
 .hero p.lede{font-size:clamp(1rem,1.18vw,1.16rem);color:var(--text-dim);max-width:54ch;margin-bottom:38px}
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
@@ -209,86 +209,93 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
   position:relative;
   z-index:1;
   width:100%;
-  height:clamp(300px,34vw,500px);
+  height:clamp(320px,34vw,510px);
   justify-self:stretch;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   pointer-events:none;
   overflow:visible;
   background:transparent !important;
   border:0 !important;
   box-shadow:none !important;
-  transform:translateX(clamp(-8px,-.9vw,-2px));
 }
 .hero-video{
-  position:absolute;
-  inset:clamp(-18px,-2vw,-8px);
-  overflow:visible;
-  background:transparent !important;
+  position:relative;
+  width:min(100%,clamp(300px,32vw,500px));
+  aspect-ratio:1/1;
+  overflow:hidden;
+  background:var(--ink);
   border:0 !important;
-  border-radius:0 !important;
+  border-radius:50%;
   box-shadow:none !important;
   outline:0 !important;
+  isolation:isolate;
+  transform:translateX(clamp(-10px,-1vw,-4px));
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0 48%,rgba(0,0,0,.92) 58%,rgba(0,0,0,.58) 68%,rgba(0,0,0,.20) 78%,transparent 91%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 0 48%,rgba(0,0,0,.92) 58%,rgba(0,0,0,.58) 68%,rgba(0,0,0,.20) 78%,transparent 91%);
 }
 .hero-video video{
-  width:100%;
-  height:100%;
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:138%;
+  height:138%;
   display:block;
-  object-fit:contain;
+  object-fit:cover;
   background:transparent !important;
-  opacity:.94;
+  opacity:.96;
   mix-blend-mode:screen;
-  filter:drop-shadow(0 28px 72px rgba(0,0,0,.34)) saturate(1.08) contrast(1.04);
-  -webkit-mask-image:
-    radial-gradient(ellipse at 50% 50%,#000 0 32%,rgba(0,0,0,.92) 44%,rgba(0,0,0,.56) 56%,rgba(0,0,0,.20) 66%,transparent 78%),
-    linear-gradient(to right,transparent 0%,#000 18%,#000 82%,transparent 100%),
-    linear-gradient(to bottom,transparent 0%,#000 18%,#000 82%,transparent 100%);
-  -webkit-mask-composite:source-in,source-in;
-  mask-image:
-    radial-gradient(ellipse at 50% 50%,#000 0 32%,rgba(0,0,0,.92) 44%,rgba(0,0,0,.56) 56%,rgba(0,0,0,.20) 66%,transparent 78%),
-    linear-gradient(to right,transparent 0%,#000 18%,#000 82%,transparent 100%),
-    linear-gradient(to bottom,transparent 0%,#000 18%,#000 82%,transparent 100%);
-  mask-composite:intersect;
+  transform:translate(-50%,-50%) scale(1.03);
+  filter:saturate(1.12) contrast(1.08) brightness(1.08);
 }
 .hero-video::before{
   content:"";
   position:absolute;
-  inset:18% 12%;
+  inset:8%;
   border-radius:50%;
-  background:radial-gradient(circle,rgba(244,69,61,.12),rgba(91,75,255,.09) 42%,transparent 74%);
-  filter:blur(72px);
-  opacity:.68;
+  background:radial-gradient(circle,rgba(244,69,61,.14),rgba(91,75,255,.10) 44%,transparent 72%);
+  filter:blur(64px);
+  opacity:.72;
   pointer-events:none;
+  z-index:-1;
 }
 .hero-video::after{
   content:"";
   position:absolute;
-  inset:-4%;
+  inset:-1px;
+  border-radius:50%;
   pointer-events:none;
+  z-index:2;
   background:
-    linear-gradient(to right,var(--ink) 0%,rgba(22,23,27,.92) 7%,rgba(22,23,27,.48) 17%,transparent 30%,transparent 70%,rgba(22,23,27,.48) 83%,rgba(22,23,27,.92) 93%,var(--ink) 100%),
-    linear-gradient(to bottom,var(--ink) 0%,rgba(22,23,27,.92) 7%,rgba(22,23,27,.48) 17%,transparent 30%,transparent 70%,rgba(22,23,27,.48) 83%,rgba(22,23,27,.92) 93%,var(--ink) 100%);
-  mix-blend-mode:normal;
+    radial-gradient(circle at 50% 50%,transparent 0 54%,rgba(22,23,27,.18) 66%,rgba(22,23,27,.62) 80%,var(--ink) 96%),
+    linear-gradient(to right,var(--ink) 0%,rgba(22,23,27,.96) 5%,rgba(22,23,27,.42) 16%,transparent 30%,transparent 70%,rgba(22,23,27,.42) 84%,rgba(22,23,27,.96) 95%,var(--ink) 100%),
+    linear-gradient(to bottom,var(--ink) 0%,rgba(22,23,27,.96) 5%,rgba(22,23,27,.42) 16%,transparent 30%,transparent 70%,rgba(22,23,27,.42) 84%,rgba(22,23,27,.96) 95%,var(--ink) 100%);
 }
 @media(max-width:1100px){
   .hero{min-height:clamp(560px,70vh,700px)}
-  .hero .wrap{grid-template-columns:minmax(0,3fr) minmax(220px,2fr);gap:clamp(16px,2.6vw,34px)}
+  .hero .wrap{grid-template-columns:minmax(0,3fr) minmax(200px,2fr);gap:clamp(16px,3vw,42px)}
   .hero h1{font-size:clamp(2.15rem,4.7vw,3.7rem)}
-  .hero-art{height:clamp(260px,34vw,410px)}
+  .hero-art{height:clamp(270px,34vw,420px)}
+  .hero-video{width:min(100%,clamp(260px,32vw,420px))}
 }
 @media(max-width:820px){
   .hero{padding-top:62px;min-height:clamp(510px,68vh,620px)}
-  .hero .wrap{grid-template-columns:minmax(0,1.55fr) minmax(150px,.95fr);gap:12px}
+  .hero .wrap{grid-template-columns:minmax(0,1.5fr) minmax(150px,1fr);gap:clamp(8px,2vw,18px)}
   .hero h1{font-size:clamp(1.85rem,5.2vw,2.9rem);margin:18px 0 16px}
   .hero p.lede{font-size:clamp(.88rem,2vw,1rem);margin-bottom:24px;max-width:48ch}
   .hero-meta{margin-top:28px;gap:16px}
-  .hero-art{height:clamp(210px,38vw,320px);transform:translateX(-4px)}
+  .hero-art{height:clamp(220px,38vw,320px)}
+  .hero-video{width:min(100%,clamp(210px,36vw,320px));transform:translateX(-4px)}
   .btn{padding:11px 20px;font-size:.82rem}
 }
 @media(max-width:560px){
   .hero{min-height:auto;padding:54px 0 58px}
-  .hero .wrap{grid-template-columns:minmax(0,1.7fr) minmax(108px,.8fr);gap:4px}
-  .hero-art{height:clamp(170px,44vw,230px);opacity:.82;transform:translateX(-10px)}
-  .hero-video{inset:-22px}
+  .hero .wrap{grid-template-columns:minmax(0,1.55fr) minmax(104px,.9fr);gap:2px}
+  .hero-art{height:clamp(160px,44vw,220px);opacity:.88}
+  .hero-video{width:min(100%,clamp(138px,42vw,210px));transform:translateX(-8px)}
   .hero-meta{display:none}
+  .hero-video video{width:145%;height:145%}
 }
 
 /* ---------- PROBLEM STRIP ---------- */
