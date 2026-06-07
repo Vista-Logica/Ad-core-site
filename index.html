@@ -234,64 +234,36 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
 }
 .hero-video{
   position:relative;
-  width:min(100%,clamp(300px,30vw,470px));
+  width:min(100%,clamp(320px,32vw,520px));
   aspect-ratio:1/1;
-  overflow:hidden;
-  background:transparent;
-  border-radius:50%;
-  border:0;
-  box-shadow:none;
+  overflow:visible;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  outline:0 !important;
   transform:translateX(clamp(-8px,-.8vw,-3px));
-
-  -webkit-mask-image:radial-gradient(
-    circle,
-    #000 0 46%,
-    rgba(0,0,0,.85) 56%,
-    rgba(0,0,0,.55) 66%,
-    rgba(0,0,0,.25) 76%,
-    rgba(0,0,0,.08) 84%,
-    transparent 92%
-  );
-
-  mask-image:radial-gradient(
-    circle,
-    #000 0 46%,
-    rgba(0,0,0,.85) 56%,
-    rgba(0,0,0,.55) 66%,
-    rgba(0,0,0,.25) 76%,
-    rgba(0,0,0,.08) 84%,
-    transparent 92%
-  );
+  isolation:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:auto;
 }
 
-.hero-video video{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:120%;
-  height:120%;
-  object-fit:cover;
-  transform:translate(-50%,-50%) scale(1.02);
-  border:0;
-  border-radius:50%;
-  mix-blend-mode:normal;
-  filter:brightness(1.03) contrast(1.06) saturate(1.12);
+.hero-video iframe,
+.hero-video spline-viewer{
+  width:100%;
+  height:100%;
+  display:block;
+  border:0 !important;
+  outline:0 !important;
+  background:transparent !important;
 }
 
+.hero-video::before,
 .hero-video::after{
-  content:"";
-  position:absolute;
-  inset:-10%;
-  border-radius:50%;
-  pointer-events:none;
-  background:radial-gradient(
-    circle,
-    transparent 0 42%,
-    rgba(22,23,27,.18) 56%,
-    rgba(22,23,27,.42) 68%,
-    rgba(22,23,27,.72) 80%,
-    var(--ink) 94%
-  );
+  display:none !important;
+  content:none !important;
 }
 @media(max-width:1100px){
   .hero{min-height:clamp(560px,70vh,700px)}
@@ -319,7 +291,7 @@ h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;letter-spaci
   .hero-video{width:min(100%,clamp(138px,40vw,200px));transform:translateX(-6px)}
   .hero-meta{overflow-x:auto;gap:22px;padding-bottom:4px;scrollbar-width:none}
   .hero-meta::-webkit-scrollbar{display:none}
-  .hero-video video{width:116%;height:116%}
+  .hero-video iframe{width:100%;height:100%}
 }
 
 
@@ -901,9 +873,15 @@ function renderHome(){
     </div>
     <div class="hero-art" aria-label="Ad-Core animated platform visual">
       <div class="hero-video reveal">
-        <video autoplay muted loop playsinline preload="metadata">
-          <source src="assets/videos/circle_animation.mp4" type="video/mp4">
-        </video>
+        <iframe
+          src="https://my.spline.design/lineglobecopycopy-vRrDWxsbkNBebEfK4oyeoQR0-Pmm/"
+          title="Ad-Core interactive Spline animation"
+          frameborder="0"
+          width="100%"
+          height="100%"
+          allow="autoplay; fullscreen; xr-spatial-tracking"
+          allowfullscreen>
+        </iframe>
       </div>
     </div>
    </div>
